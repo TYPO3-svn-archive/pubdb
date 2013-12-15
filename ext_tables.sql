@@ -145,7 +145,8 @@ create TABLE tx_pubdb_pub_contributors (
 	role tinytext,
 	pubsort int(10) DEFAULT '0' NOT NULL,
 	contributorsort int(10) DEFAULT '0' NOT NULL,
-	PRIMARY KEY (uid)
+	PRIMARY KEY (uid),
+	KEY parent (pid)
 );
 
 #

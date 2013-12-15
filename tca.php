@@ -539,14 +539,17 @@ $TCA['tx_pubdb_pub_contributors'] = Array(
 	'interface' => Array (
 		'showRecordFieldList' => 'pubid,role,contributorid'
 	),
-	'feInterface' => $TCA['tx_pubdb_categories']['feInterface'],
+	'feInterface' => $TCA['tx_pubdb_pub_contributors']['feInterface'],
 	'columns' => Array(
 		'pubid' => Array(
 			'label' => 'Publication',
 			'config' => Array(
 				'type' => 'select',
 				'foreign_table' => 'tx_pubdb_data',
+			    'minitems' => 0,
 				'maxitems' => 1,
+				'size' => 1,
+					
 				//'localizeReferences' => 1,
 			)
 
@@ -556,8 +559,9 @@ $TCA['tx_pubdb_pub_contributors'] = Array(
 			'config' => Array(
 				'type' => 'select',
 				'foreign_table' => 'tx_pubdb_contributors',
+				'minitems' => 0,
 				'maxitems' => 1,
-				//'localizeReferences' => 1,
+				'size' => 1,
 			)
 
 		),
@@ -658,13 +662,17 @@ $TCA['tx_pubdb_contributors'] = Array (
 				'default' => 'person'
 			)
 		),
+// NOTE: for the following fields text is used instead of input due to a bug in typo3 core which is not fixed
+// yet in the most current version (6.1)		
 		'organization' => Array (		
 			'exclude' => 1,
 			'label' => 'LLL:EXT:pubdb/locallang_db.xml:tx_pubdb_contributor.organization',
 			'displayCond' => 'FIELD:contributor_type:=:organization',
 			'config' => Array (
-				'type' => 'input',
-				'size' => '30'
+				'type' => 'text',
+				'rows' => '1',	
+				'cols' => '20',
+				'wrap' => 'off'
 			)
 		),
 		'surname' => Array (		
@@ -672,8 +680,10 @@ $TCA['tx_pubdb_contributors'] = Array (
 			'label' => 'LLL:EXT:pubdb/locallang_db.xml:tx_pubdb_contributor.surname',
 			'displayCond' => 'FIELD:contributor_type:=:person',		
 			'config' => Array (
-				'type' => 'input',	
-				'size' => '20',
+				'type' => 'text',
+				'rows' => '1',	
+				'cols' => '20',
+				'wrap' => 'off'
 			)
 		),
 		'given_name' => Array (		
@@ -681,8 +691,10 @@ $TCA['tx_pubdb_contributors'] = Array (
 			'label' => 'LLL:EXT:pubdb/locallang_db.xml:tx_pubdb_contributor.given_name',	
 			'displayCond' => 'FIELD:contributor_type:=:person',		
 			'config' => Array (
-				'type' => 'input',	
-				'size' => '20',
+				'type' => 'text',
+				'rows' => '1',	
+				'cols' => '20',
+				'wrap' => 'off'
 			)
 		),
 		'suffix' => Array (		
@@ -690,8 +702,10 @@ $TCA['tx_pubdb_contributors'] = Array (
 			'label' => 'LLL:EXT:pubdb/locallang_db.xml:tx_pubdb_contributor.suffix',
 			'displayCond' => 'FIELD:contributor_type:=:person',			
 			'config' => Array (
-				'type' => 'input',	
-				'size' => '20',
+				'type' => 'text',
+				'rows' => '1',	
+				'cols' => '20',
+				'wrap' => 'off'
 			)
 		),
 		'affiliation1' => Array (		
@@ -699,8 +713,10 @@ $TCA['tx_pubdb_contributors'] = Array (
 			'label' => 'LLL:EXT:pubdb/locallang_db.xml:tx_pubdb_contributor.affiliation1',	
 			'displayCond' => 'FIELD:contributor_type:=:person',		
 			'config' => Array (
-				'type' => 'input',	
-				'size' => '30',
+				'type' => 'text',
+				'rows' => '1',	
+				'cols' => '20',
+				'wrap' => 'off'
 			)
 		),
 		'affiliation2' => Array (		
@@ -708,8 +724,10 @@ $TCA['tx_pubdb_contributors'] = Array (
 			'label' => 'LLL:EXT:pubdb/locallang_db.xml:tx_pubdb_contributor.affiliation2',		
 			'displayCond' => 'FIELD:contributor_type:=:person',	
 			'config' => Array (
-				'type' => 'input',	
-				'size' => '30',
+				'type' => 'text',
+				'rows' => '1',	
+				'cols' => '20',
+				'wrap' => 'off'
 			)
 		),
 		'affiliation3' => Array (		
@@ -717,8 +735,10 @@ $TCA['tx_pubdb_contributors'] = Array (
 			'label' => 'LLL:EXT:pubdb/locallang_db.xml:tx_pubdb_contributor.affiliation3',		
 			'displayCond' => 'FIELD:contributor_type:=:person',	
 			'config' => Array (
-				'type' => 'input',	
-				'size' => '30',
+				'type' => 'text',
+				'rows' => '1',	
+				'cols' => '20',
+				'wrap' => 'off'
 			)
 		),
 		'affiliation4' => Array (		
@@ -726,8 +746,10 @@ $TCA['tx_pubdb_contributors'] = Array (
 			'label' => 'LLL:EXT:pubdb/locallang_db.xml:tx_pubdb_contributor.affiliation4',	
 			'displayCond' => 'FIELD:contributor_type:=:person',		
 			'config' => Array (
-				'type' => 'input',	
-				'size' => '30',
+				'type' => 'text',
+				'rows' => '1',	
+				'cols' => '20',
+				'wrap' => 'off'
 			)
 		),
 		'affiliation5' => Array (		
@@ -735,8 +757,10 @@ $TCA['tx_pubdb_contributors'] = Array (
 			'label' => 'LLL:EXT:pubdb/locallang_db.xml:tx_pubdb_contributor.affiliation5',	
 			'displayCond' => 'FIELD:contributor_type:=:person',		
 			'config' => Array (
-				'type' => 'input',	
-				'size' => '30',
+				'type' => 'text',
+				'rows' => '1',	
+				'cols' => '20',
+				'wrap' => 'off'
 			)
 		),
 		'orcid' => Array (		
@@ -744,38 +768,37 @@ $TCA['tx_pubdb_contributors'] = Array (
 			'label' => 'LLL:EXT:pubdb/locallang_db.xml:tx_pubdb_contributor.orcid',	
 			'displayCond' => 'FIELD:contributor_type:=:person',		
 			'config' => Array (
-				'type' => 'input',	
-				'size' => '30',
+				'type' => 'text',
+				'rows' => '1',	
+				'cols' => '20',
+				'wrap' => 'off'
 			)
 		),
 			'pubids' => Array(
-					'config' => Array(
-							'type' => 'passthrough',
-					),
-						
-			),
-
-			/*'pubids' => Array(
 					"exclude" => 1,
 					"label" => "pubids",
 					"config" => Array (
 							"type" => "inline",
 							"foreign_table" => "tx_pubdb_pub_contributors",
+							"foreign_selector" => "pubid",
+							"foreign_unique" => "pubid",
 							"foreign_field" => "contributorid",
 							"foreign_sortby" => "contributorsort",
 							//"foreign_label" => "pubid",
 							"maxitems" => 10,
+							'size' => 1,
 							'appearance' => array(
-									/*'showSynchronizationLink' => 1,
-									'showAllLocalizationLink' => 1,
-									'showPossibleLocalizationRecords' => 1,
-									'showRemovedLocalizationRecords' => 1,
+								//	'showSynchronizationLink' => 1,
+								//	'showAllLocalizationLink' => 1,
+								//	'showPossibleLocalizationRecords' => 1,
+								//	'showRemovedLocalizationRecords' => 1,
+									'useCombination' => 1,
 							),
 							'behaviour' => array(
-									'localizationMode' => 'select',
+									//'localizationMode' => 'select',
 							),
 					)
-			),*/
+			),
 	),
 	'types' => Array (
 		'0' => Array('showitem' => 'pubids,contributor_type,organization, surname, given_name, suffix, affiliation1, affiliation2, affiliation3, affiliation4,affiliation5,ocrid')
