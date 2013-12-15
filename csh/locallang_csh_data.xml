@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+<meta type="array">
+   <description>Description labels for extension pubdb</description>
+   <type>CSH</type>
+   <csh_table>tx_pubdb_data</csh_table>
+   <fileId>EXT:pubdb/locallang_csh_data.xml</fileId>
+   <labelContext type="array">
+		</labelContext>
+</meta>
+   <data type="array">
+      <languageKey index="default" type="array">
+	<label index=".description">Test </label>
+	<label index="pubtype.description">Select the type of the publication</label>
+	<label index="author.description">Enter the name in the format SURNAME, GIVEN_NAME1 GIVEN_NAME2 (e.g. van Halen, Edward Alex) or GIVEN_NAME SURNAME, if only one of each (e.g. Albert Einstein)</label>
+        <label index="coauthors.description">Enter a list of co-authors (including coresponding author), separated by ; e.g. Einstein, Albert; van Halen, Edward</label>
+      </languageKey>
+      <!--languageKey index="de" type="array">
+         <label index="coauthors.description">Beschreibungstext</label>
+      </languageKey-->
+   </data>
+</T3locallang>

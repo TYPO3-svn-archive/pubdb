@@ -1,0 +1,12 @@
+	# cat=basic/doi; type=string; label=LLL:EXT:pubdb/language/template_conf.xml:doi.url
+doi.url = http://localhost/publications/doi/
+
+	# cat=basic/crossref_depositor; type=string; label=LLL:EXT:pubdb/language/template_conf.xml:crossref.depositor
+crossref.depositor = 0
+
+	# cat=basic/crossref_depositor_email; type=string; label=LLL:EXT:pubdb/language/template_conf.xml:crossref.depositor_email
+crossref.depositor_email = 0
+
+	# cat=basic/crossref_registrant; type=string; label=LLL:EXT:pubdb/language/template_conf.xml:crossref.registrant
+crossref.registrant = 12345
+

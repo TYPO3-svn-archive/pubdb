@@ -1,0 +1,13 @@
+(add new changes on top of this file)
+
+release 0.4.0
+
+* XML Crossref view moved to backend
+* adding internal flag "has crossref entry"
+* improved templates, generation of table of contents
+
+=============================
+
+07-11-15 Johannes Kropf  <johannes@kropf.at>
+
+	* Initial release

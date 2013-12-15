@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<description>Language file for pubdb template settings</description>
+		<type>module</type>
+		<csh_table></csh_table>
+		<fileId>EXT:pubdb/language/template_conf.xml</fileId>
+		<labelContext type="array">
+		</labelContext>
+	</meta>	
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="crossref.registrant">CrossRef registrant:Set your CrossRef registrant ID here.</label>
+			<label index="crossref.depositor">CrossRef depositor:Set the name of the CrossRef depositor here.</label>
+			<label index="crossref.depositor_email">CrossRef depositor email:Set the email address of the CrossRef depositor here.</label>
+			<label index="doi.url">URL for DOI:Define the URL where DOIs shall point to (e.g. http://anywhere.com/pulications/doi/)</label>
+		</languageKey>
+	</data>
+</T3locallang>

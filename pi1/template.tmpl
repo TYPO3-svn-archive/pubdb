@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+  <title></title>
+  <meta name="GENERATOR" content="Quanta Plus">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+</head>
+<body>
+<h1>Publikatsionstemplate </h1>
+
+<b>List template<br><br></b>
+
+<!-- ###LIST_BROWSE_TEMPLATE### begin -->
+<div class ="tx_pubdb-list-pagebrowser">###LIST_PAGEBROWSER###</div>	
+<!-- ###LIST_BROWSE_TEMPLATE### end -->
+
+<!-- ###LIST_ITEM_TEMPLATE### begin -->
+<div class="tx_pubdb-list-container">
+        <p class="tx_pubdb-list-item">
+		<span class="tx_pubdb-list-author">###LIST_AUTHOR###</span><br />
+		<span class="tx_pubdb-list-title">###LIST_TITLE###</span> 
+                <span class="tx_pubdb-list-subtitle">###LIST_SUBTITLE###<i>###LIST_SERIES###</i>###LIST_NUMBER######LIST_PUBLISHER######LIST_LOCATION######LIST_YEAR######LIST_PAGES######LIST_ISBN###</span><br/>
+                <span class="tx_pubdb-list-file">###LIST_FILE###</span>
+	       <span class="tx_pubdb-list-order">###LIST_ORDER###</span>
+ 		<span class="tx_pubdb-list-more">###LIST_MORE###</span>	</p>
+</div>
+<!-- ###LIST_ITEM_TEMPLATE### end-->
+
+<b>Single template<br><br></b>
+
+<!-- ###SINGLE_TEMPLATE### begin -->
+<div class="tx_pubdb-single-container">
+
+       <div class="tx_pubdb-single-item">
+	<span class="tx_pubdb-single-doi">###SINGLE_DOI###</span>
+        <span class="tx_pubdb-single-author"><H3>###SINGLE_AUTHOR###</H3></span>
+       	<span class="tx_pubdb-single-title"><H2>###SINGLE_TITLE###</H2></span>
+        <span class="tx_pubdb-single-subtitle">###SINGLE_SUBTITLE###<br />###SINGLE_INFO###</span><br></br>
+	<p class="tx_pubdb-single-content">###SINGLE_CONTENT###</p>
+	<p class="tx_pubdb-single-abstract">###SINGLE_ABSTRACT###</p>
+        <p class="tx_pubdb-single-file">###SINGLE_FILE###</p>
+	<p class="tx_pubdb-single-orderlink">###SINGLE_ORDERLINK###</p>
+        <p class="tx_pubdb-single-returnlink">###SINGLE_RETURNLINK###</p>
+	
+	</div>
+</div>
+<!-- ###SINGLE_TEMPLATE### end-->
+
+<!--###SEARCH_TEMPLATE### begin -->
+<div class="tx_pubdb-search-container">
+         <h2>###SEARCH_TITLE###</h2>
+         ###SEARCH_BEGIN_FORM###
+         <div class="tx_pubdb-search-fieldcontainer">
+             <div class="tx_pubdb-search-fielddescription">###SEARCH_SEARCH_FOR_DESC###:</div>
+             <div class="tx_pubdb-search-field">###SEARCH_SEARCH_FOR_FIELD###</div>
+         </div>
+       <br/><br/>
+	<div class="tx_pubdb-search-fieldcontainer">
+		<div class="tx_pubdb-search-fielddescription">###SEARCH_SEARCH_IN_DESC###:</div>
+		<div class="tx_pubdb-search-field">###SEARCH_SEARCH_IN_FIELD###</div>
+	 </div> <br /><br />
+	<div class="tx_pubdb-search-fieldcontainer">
+		<div class="tx_pubdb-search-fielddescription">###SEARCH_SEARCH_CAT_DESC###:</div>
+		<div class="tx_pubdb-search-field">###SEARCH_SEARCH_CAT_FIELD###</div>
+         </div>
+	<div class="tx_pubdb-search-fieldcontainer">
+		<div class="tx_pubdb-search-fielddescription">&nbsp;</div>
+		<div class="tx_pubdb-search-field">###SEARCH_SUBMIT###</div>
+         </div>
+         ###SEARCH_END_FORM###
+<p>&nbsp;</p>
+</div>
+<!-- ###SEARCH_TEMPLATE### end-->
+
+<!-- ###ORDER_TEMPLATE### begin -->
+<div class="tx_pubdb-order-container">
+###ORDER_BEGIN_FORM###
+        <div class="tx_pubdb-order-text">
+            ###ORDER_TEXT1###
+       </div>
+	 <br/><br/>
+	<div class="tx_pubdb-order-fieldcontainer">
+		<div class="tx_pubdb-order-fielddescription">###ORDER_NAME_DESC###:</div>
+		<div class="tx_pubdb-order-field">###ORDER_NAME###</div>
+	</div>    <br/><br/>
+	<div class="tx_pubdb-order-fieldcontainer">
+		<div class="tx_pubdb-order-fielddescription">###ORDER_COMPANY_DESC###:</div>
+		<div class="tx_pubdb-order-field">###ORDER_COMPANY###</div>
+	</div>    <br/><br/>
+	<div class="tx_pubdb-order-fieldcontainer">
+		<div class="tx_pubdb-order-fielddescription">###ORDER_STREET_DESC###:</div>
+		<div class="tx_pubdb-order-field">###ORDER_STREET###</div>
+	</div>    <br/><br/>
+<div class="tx_pubdb-order-fieldcontainer">
+		<div class="tx_pubdb-order-fielddescription">###ORDER_CODE_DESC###:</div>
+		<div class="tx_pubdb-order-field">###ORDER_CODE###</div>
+	</div>    <br/><br/>
+<div class="tx_pubdb-order-fieldcontainer">
+		<div class="tx_pubdb-order-fielddescription">###ORDER_CITY_DESC###:</div>
+		<div class="tx_pubdb-order-field">###ORDER_CITY###</div>
+	</div>    <br/><br/>
+ 	<div class="tx_pubdb-order-fieldcontainer">
+		<div class="tx_pubdb-order-fielddescription">###ORDER_EMAIL_DESC###:</div>
+		<div class="tx_pubdb-order-field">###ORDER_EMAIL###</div>
+	</div>  <br/><br />
+	<div class="tx_pubdb-order-fieldcontainer">
+		<div class="tx_pubdb-order-fielddescription">&nbsp;</div>
+		<div class="tx_pubdb-order-field">###ORDER_SUBMIT###</div>
+         </div><br/><br/>
+<div class="tx_pubdb-order-fieldcontainer">
+		<div class="tx_pubdb-order-requiredhint">&nbsp;</div>
+		<div class="tx_pubdb-order-requiredhint">###ORDER_REQUIRED_HINT###</div>
+	</div>  
+###ORDER_END_FORM###
+<p>&nbsp;</p>
+</div>
+<!-- ###ORDER_TEMPLATE### end -->
+
+</body>
+</html>

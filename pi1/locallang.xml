@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+	<meta type="array">
+		<type>module</type>
+		<description>Language labels for plugin &quot;tx_pubdb_pi1&quot;</description>
+	</meta>
+	<data type="array">
+		<languageKey index="default" type="array">
+			<label index="back">back</label>
+			<label index="download">[download]</label>
+			<label index="download_title">Downloads:</label>
+			<label index="filetype.0">[download]</label>
+			<label index="filetype.1">[download abstract]</label>
+			<label index="filetype.2">[download content]</label> 
+			<label index="filetype.3">[download full]</label> 
+			<label index="more">[more]</label>
+			<label index="search">Search</label>
+			<label index="order">[Order hardcopy]</label>
+			<label index="search.searchfor">Search for</label>
+			<label index="search.infield">In field</label>
+			<label index="search.incategory">In category</label>
+			<label index="search.authorfield">Author</label>
+			<label index="search.yearfield">Year</label>
+			<label index="search.numberfield">Number</label>
+			<label index="search.titlefield">Title</label>
+			<label index="search.submit">Search</label>
+			<label index="search.entriesfound">entries found.</label>
+			<label index="search.allcat">All</label>
+			<label index="list.publisher">Publisher</label>
+			<label index="list.noentries">No entries found!</label>
+			<label index="list.inseries">In series</label>
+			<label index="list.isbn">ISSN/ISBN Print</label>
+			<label index="list.isbn2">ISSN/ISBN Online</label>
+			<label index="list.pages">pages</label>
+			<label index="order.name">Name</label>
+			<label index="order.company">Company</label>
+			<label index="order.street">Street</label>
+			<label index="order.zipcode">Zipcode</label>
+			<label index="order.city">City</label>
+			<label index="order.country">Country</label>
+			<label index="order.email">E-mail</label>
+			<label index="order.submit">Send</label>
+			<label index="order.text1">Please send me a hardcopy of the publication</label>
+			<label index="order.text2">to the address below:</label>
+			<label index="order.price">Price</label>
+			<label index="order.reducedprice">Member price</label>
+			<label index="order.required">Fields with * are required</label>
+			<label index="order.formerrormessage">Fields are missing, please check your data!</label>
+			<label index="order.sentmessage">Your order was sent successfully! Thank you!</label>
+			<label index="error.noentry">Sorry, no entry found with id</label>
+			<label index="hint.loginrequiredfordownload">You need to login to download this file.</label>
+		</languageKey>
+		<languageKey index="de" type="array">
+			<label index="back">zurück</label>
+			<label index="download">[herunterladen]</label>
+			<label index="download_title">Dateien:</label>
+			<label index="filetype.0">[herunterladen]</label>
+			<label index="filetype.1">[Abstract herunterladen]</label>
+			<label index="filetype.2">[Inhaltsverzeichnis herunterladen]</label> 
+			<label index="filetype.3">[komplette Publikation herunterladen]</label> 
+			<label index="more">[mehr]</label>
+			<label index="search">Suche</label>
+			<label index="order">[Bestellung]</label>
+			<label index="search.searchfor">Suche nach</label>
+			<label index="search.infield">im Feld</label>
+			<label index="search.incategory">in Kategorie</label>
+			<label index="search.authorfield">Autor</label>
+			<label index="search.yearfield">Jahr</label>
+			<label index="search.numberfield">Nummer</label>
+			<label index="search.titlefield">Titel</label>
+			<label index="search.submit">Suche</label>
+			<label index="search.allcat">Alle</label>
+			<label index="search.entriesfound">Einträge gefunden.</label>
+			<label index="list.publisher">Herausgeber</label>
+			<label index="list.noentries">Keine Einträge gefunden!</label>
+			<label index="list.inseries">aus der Reihe</label>
+			<label index="list.isbn">ISSN/ISBN Print</label>
+			<label index="list.isbn2">ISSN/ISBN Online</label>
+			<label index="list.pages">Seiten</label>
+			<label index="order.name">Name</label>
+			<label index="order.company">Firma</label>
+			<label index="order.street">Straße</label>
+			<label index="order.zipcode">PLZ</label>
+			<label index="order.city">Stadt</label>
+			<label index="order.country">Land</label>
+			<label index="order.email">E-mail</label>
+			<label index="order.submit">Senden</label>
+			<label index="order.text1">Bitte senden Sie mir ein Exemplar der Publikation</label>
+			<label index="order.text2">an die folgende Adresse:</label>
+			<label index="order.price">Preis</label>
+			<label index="order.reducedprice">Preis für Mitglieder</label>
+			<label index="order.required">Felder mit * sind verpflichtend</label>
+			<label index="order.formerrormessage">Es wurden nicht alle erforderlichen Daten angegeben!</label>
+			<label index="order.sentmessage">Ihre Bestellung wurde erfolgreich gesendet! Vielen Dank!</label>
+			<label index="error.noentry">Kein Eintrag gefunden für id</label>
+			<label index="hint.loginrequiredfordownload">Sie müssen eingeloggt sein um diese Datei zu downloaden.</label>
+		</languageKey>
+	</data>
+</T3locallang>
