@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<T3locallang>
+<meta type="array">
+   <description>Description labels for extension pubdb</description>
+   <type>CSH</type>
+   <csh_table>tx_pubdb_contributors</csh_table>
+   <fileId>EXT:pubdb/locallang_csh_contributors.xml</fileId>
+   <labelContext type="array">
+		</labelContext>
+</meta>
+   <data type="array">
+      <languageKey index="default" type="array">
+	<label index=".description">Contributors for a publication</label>
+	<label index="showinlist.description">If selected, contributor will be shown in the selector for reuse in another publication</label>
+      </languageKey>
+      <languageKey index="de" type="array">
+         <label index=".description">Autoren/Editoren einer Publikation</label>
+	<label index="showinlist.description">Wenn gewählt, Eintrag wird in der Liste zur Auswahl angezeigt (z.B. für häufig vorkommende Editoren</label>
+      </languageKey>
+   </data>
+</T3locallang>

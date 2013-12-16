@@ -292,13 +292,17 @@ function entryToXML($pub) {
 			    if (isset($row['given_name']) && strlen($row['given_name']) > 0) $item->appendChild($domtree->createElement('given_name',$row['given_name']));
   			    if (isset($row['surname']) && strlen($row['surname']) > 0) $item->appendChild($domtree->createElement('surname',$row['surname']));
 			    if (isset($row['suffix']) && strlen($row['suffix']) > 0) $item->appendChild($domtree->createElement('suffix',$row['suffix']));
-			    if (isset($row['affiliation1']) && strlen($row['affiliation1']) > 0) $item->appendChild($domtree->createElement('affiliation',$row['affiliation1']));
-	    if (isset($row['affiliation2']) && strlen($row['affiliation2']) > 0) $item->appendChild($domtree->createElement('affiliation',$row['affiliation2']));
-	    if (isset($row['affiliation3']) && strlen($row['affiliation3']) > 0) $item->appendChild($domtree->createElement('affiliation',$row['affiliation3']));
-	    if (isset($row['affiliation4']) && strlen($row['affiliation4']) > 0) $item->appendChild($domtree->createElement('affiliation',$row['affiliation4']));
-	    if (isset($row['affiliation5']) && strlen($row['affiliation5']) > 0) $item->appendChild($domtree->createElement('affiliation',$row['affiliation5']));
+			    if (isset($row['affiliation']) && strlen($row['affiliation']) > 0) { 
+					$affiliations = explode("\n",$row['affiliation']);
+					foreach ($affiliations as $a) {
+						$trimmed = trim($a);
+						if ($this->isTextValid($trimmed)) 
+							$item->appendChild($domtree->createElement('affiliation',$trimmed));
+					}
+			    }
 			    if (isset($row['orcid']) && strlen($row['orcid']) > 0) $item->appendChild($domtree->createElement('orcid',$row['orcid']));
 			}
+
 			$item->setAttribute('contributor_role',$row['role']);
 			if ($isfirst) { 
 	 			$item->setAttribute('sequence','first');

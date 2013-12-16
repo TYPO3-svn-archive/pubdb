@@ -51,7 +51,7 @@ $TCA['tx_pubdb_contributors'] = Array (
 	'ctrl' => Array (
 		'title' => 'LLL:EXT:pubdb/locallang_db.xml:tx_pubdb_contributors',		
 		'label' => 'surname',	
-		'label_alt' => 'given_name,affiliation1,organization',
+		'label_alt' => 'given_name,affiliation,organization',
 		'label_alt_force' => 'true',
 		'tstamp' => 'tstamp',
 		'crdate' => 'crdate',
@@ -143,5 +143,6 @@ t3lib_extMgm::addStaticFile($_EXTKEY,'static/css/','default CSS-styles');
 
 //if (TYPO3_MODE=='BE') {
 	t3lib_extMgm::addLLrefForTCAdescr('tx_pubdb_data','EXT:pubdb/csh/locallang_csh_data.xml');
+	t3lib_extMgm::addLLrefForTCAdescr('tx_pubdb_data','EXT:pubdb/csh/locallang_csh_contributors.xml');
 //}
 ?>

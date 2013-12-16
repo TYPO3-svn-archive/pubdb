@@ -10,13 +10,16 @@
 </meta>
    <data type="array">
       <languageKey index="default" type="array">
-	<label index=".description">Test </label>
+	<label index=".description">Record holding a publication</label>
 	<label index="pubtype.description">Select the type of the publication</label>
 	<label index="author.description">Enter the name in the format SURNAME, GIVEN_NAME1 GIVEN_NAME2 (e.g. van Halen, Edward Alex) or GIVEN_NAME SURNAME, if only one of each (e.g. Albert Einstein)</label>
         <label index="coauthors.description">Enter a list of co-authors (including coresponding author), separated by ; e.g. Einstein, Albert; van Halen, Edward</label>
       </languageKey>
-      <!--languageKey index="de" type="array">
-         <label index="coauthors.description">Beschreibungstext</label>
-      </languageKey-->
+      <languageKey index="de" type="array">
+        <label index=".description">Publikationsdatenbank</label>
+		<label index="pubtype.description">Wählen Sie einen Publikationstyp</label>
+		<label index="author.description">Format: NACHNAME, VORNAME1 VORNAME2 (z.B. van Halen, Edward Alex) oder VORNAME NACHNAME, wenn jeweils nur aus einem Wort bestehend (z.B. Albert Einstein)</label>
+        <label index="coauthors.description">Liste von Koautoren (inklusive Kontaktautor), getrennt durch ; z.B. Einstein, Albert; van Halen, Edward</label>
+      </languageKey>
    </data>
 </T3locallang>
