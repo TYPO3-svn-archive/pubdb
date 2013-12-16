@@ -2,7 +2,7 @@
 /***************************************************************
 *  Copyright noticef
 *
-*  (c) 2012 Johannes Kropf <johannes@kropf.at>
+*  (c) 2013 Johannes Kropf <johannes@kropf.at>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -332,10 +332,10 @@ function entryToXML($pub) {
 		foreach($this->parseAuthors($pub['coauthors']) as $el) {
 		     $author = $domtree->createElement('person_name');
   		     if ($isfirst) {	
-			     $author->setAttribute('sequence','additional');
+			     $author->setAttribute('sequence','first');
 			     $isfirst = false;
 		     } else {
-   			     $author->setAttribute('sequence','first');
+   			     $author->setAttribute('sequence','additional');
 			}
 		     $author->setAttribute('contributor_role','author');	
 		     $author->appendChild($domtree->createElement('given_name',$el['given_name']));
