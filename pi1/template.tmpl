@@ -7,7 +7,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 </head>
 <body>
-<h1>Publikatsionstemplate </h1>
+<h1>Publikationstemplate </h1>
 
 <b>List template<br><br></b>
 
@@ -18,14 +18,45 @@
 <!-- ###LIST_ITEM_TEMPLATE### begin -->
 <div class="tx_pubdb-list-container">
         <p class="tx_pubdb-list-item">
-		<span class="tx_pubdb-list-author">###LIST_AUTHOR###</span><br />
-		<span class="tx_pubdb-list-title">###LIST_TITLE###</span> 
-                <span class="tx_pubdb-list-subtitle">###LIST_SUBTITLE###<i>###LIST_SERIES###</i>###LIST_NUMBER######LIST_PUBLISHER######LIST_LOCATION######LIST_YEAR######LIST_PAGES######LIST_ISBN###</span><br/>
+		<span class="tx_pubdb-list-item">###LIST_AUTHOR### (###LIST_YEAR###): ###LIST_TITLE###, ###LIST_SUBTITLE###, <strong>###LIST_NUMBER###</strong>(###LIST_ISSUE###), ###LIST_PUBLISHER###, ###LIST_LOCATION###, ###LIST_PAGES###, ###LIST_ISBN###.</span><br/>
                 <span class="tx_pubdb-list-file">###LIST_FILE###</span>
 	       <span class="tx_pubdb-list-order">###LIST_ORDER###</span>
  		<span class="tx_pubdb-list-more">###LIST_MORE###</span>	</p>
 </div>
 <!-- ###LIST_ITEM_TEMPLATE### end-->
+
+<!-- ###LIST_ITEM_TEMPLATE_JOURNAL_ARTICLE### begin -->
+<div class="tx_pubdb-list-container">
+        <p class="tx_pubdb-list-item">
+		<span class="tx_pubdb-list-item">###LIST_AUTHOR### (###LIST_YEAR###): ###LIST_TITLE###. <i>###LIST_PARENT_TITLE### (###LIST_PARENT_ABBR###)</i>, <strong>###LIST_NUMBER###</strong>(###LIST_ISSUE###), ###LIST_PAGES###, ###LIST_DOI###.</span><br>
+                <span class="tx_pubdb-list-file">###LIST_FILE###</span>
+	        <span class="tx_pubdb-list-order">###LIST_ORDER###</span>
+ 		<span class="tx_pubdb-list-more">###LIST_MORE###</span>	</p>
+</div>
+<!-- ###LIST_ITEM_TEMPLATE_JOURNAL_ARTICLE### end-->
+
+<!-- ###LIST_ITEM_TEMPLATE_BOOK### begin -->
+<div class="tx_pubdb-list-container">
+        <p class="tx_pubdb-list-item">
+		<span class="tx_pubdb-list-item">###LIST_AUTHOR###, ###LIST_YEAR###:
+		<i>###LIST_TITLE###. ###LIST_SUBTITLE###.</i> ###LIST_EDITION###. ###LIST_PUBLISHER###, ###LIST_PAGES###, ###LIST_DOI###</span><br/>
+                <span class="tx_pubdb-list-file">###LIST_FILE###</span>
+	       <span class="tx_pubdb-list-order">###LIST_ORDER###</span>
+ 		<span class="tx_pubdb-list-more">###LIST_MORE###</span>	</p>
+</div>
+<!-- ###LIST_ITEM_TEMPLATE_BOOK### end-->
+
+<!-- ###LIST_ITEM_TEMPLATE_BOOK_CHAPTER### begin -->
+<div class="tx_pubdb-list-container">
+        <p class="tx_pubdb-list-item">
+		<span class="tx_pubdb-list-item">###LIST_AUTHOR###, ###LIST_YEAR###:
+		###LIST_TITLE###. <i>###LIST_PARENT_TITLE###,</i> ###LIST_EDITORS, ###LIST_PUBLISHER###, ###LIST_PAGES###, ###LIST_DOI###</span><br/>
+                <span class="tx_pubdb-list-file">###LIST_FILE###</span>
+	       <span class="tx_pubdb-list-order">###LIST_ORDER###</span>
+ 		<span class="tx_pubdb-list-more">###LIST_MORE###</span>	</p>
+</div>
+<!-- ###LIST_ITEM_TEMPLATE_BOO_CHAPTER### end-->
+
 
 <b>Single template<br><br></b>
 

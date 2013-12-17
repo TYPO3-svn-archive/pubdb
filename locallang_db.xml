@@ -70,6 +70,7 @@
 			<label index="tx_pubdb_data.hascrossrefentry">Has Crossref Entry</label>
 			<label index="tx_pubdb_data.xml">Crossref XML</label>
 			<label index="tx_pubdb_data.xml.downloadfile">Download CrossRef XML file</label>
+			<label index="tx_pubdb_data.xml.downloadfileMeta">Download CrossRef XML file (Meta only)</label>
 			<label index="tx_pubdb_data.xmlhint">Note: Store database record to update</label>
 			<label index="tx_pubdb_data.startdate">Start date</label>
 			<label index="tx_pubdb_data.enddate">End date</label>
@@ -129,7 +130,7 @@
 			<label index="tx_pubdb_data.author">Hauptautor/Editor (veraltet)</label>
 			<label index="tx_pubdb_data.authorEmail">Hauptautor E-mail</label>
 			<label index="tx_pubdb_data.authorAddress">Hauptautor Adresse</label>
-			<label index="tx_pubdb_data.authorEmail">Liste der Autoren</label>
+			<label index="tx_pubdb_data.authorEmail">E-Mail Kontaktautor</label>
 			<label index="tx_pubdb_data.title">Titel</label>
 			<label index="tx_pubdb_data.abbrev_title">Titel Abkürzung</label>	
 			<label index="tx_pubdb_data.subtitle">Untertitel</label>
@@ -188,6 +189,7 @@
 			<label index="tx_pubdb_data.hascrossrefentry">Hat Crossref Entrag</label>
 			<label index="tx_pubdb_data.xml">Crossref XML</label>
 			<label index="tx_pubdb_data.xml.downloadfile">CrossRef XML Datei runterladen</label>
+			<label index="tx_pubdb_data.xml.downloadfileMeta">CrossRef XML Datei runterladen (nur Meta-Daten)</label>
 			<label index="tx_pubdb_data.xmlhint">Hinweis: Eintrag speichern um zu aktualisieren</label>
 			<label index="tx_pubdb_data.startdate">Beginndatum</label>
 			<label index="tx_pubdb_data.enddate">Enddatum</label>

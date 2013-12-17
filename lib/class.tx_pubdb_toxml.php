@@ -58,7 +58,7 @@ function __construct() {
 *   Generates a crossref XML representation of the publication given
 *
 */
-function entryToXML($pub) {
+function entryToXML($pub, $metaOnly=0) {
 		//debug($pub);
     		$domtree = new DOMDocument('1.0', 'UTF-8');
 		$domtree->preserveWhiteSpace = false;
@@ -91,7 +91,16 @@ function entryToXML($pub) {
 		// body section
 		$body = $domtree->createElement('body');
 		if ($pub['pubtype'] === 'journal') {
-		  $body->appendChild($this->createJournalEntry($pub, $domtree));
+		  $journal = $this->createJournalEntry($pub, $domtree);	
+
+		  // If false, create also child publications (articles, etc..)
+		  if ($metaOnly === 0) {
+		  	  $result = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*','tx_pubdb_data','parent_pubid='.$pub['uid']);
+			  while ($article = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result)) 	
+			  $journal->appendChild($this->createJournal_ArticleEntry($article, $domtree, $pub));
+	 	  }	
+		  $body->appendChild($journal);
+
 		}
 		
 		if ($pub['pubtype'] === 'conference') {
@@ -104,6 +113,14 @@ function entryToXML($pub) {
 		    $conference_meta = $this->createConferenceEntry($conference, $domtree);
 		    $proceedings_meta = $this->createConferenceProceedingsEntry($pub, $domtree);
 		    $conference_meta->appendChild($proceedings_meta);
+
+		     // If false, create also child publications (articles, etc..)
+		    if ($metaOnly === 0) {
+		  	  $result = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*','tx_pubdb_data','parent_pubid='.$pub['uid']);
+			  while ($article = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result)) 	
+			  $conference_meta->appendChild($this->createConferencePaperEntry($article, $domtree));
+	 	    }		
+
 		    $body -> appendChild($conference_meta);	
 
 		}
@@ -128,7 +145,15 @@ function entryToXML($pub) {
 		}		 	
 
 		if ($pub['pubtype'] === 'book') {
-		   $body->appendChild($this->createBookEntry($pub,$domtree));
+		   $book=$this->createBookEntry($pub,$domtree);
+  	  	   // If false, create also child publications (articles, etc..)
+		    if ($metaOnly === 0) {
+		  	  $result = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*','tx_pubdb_data','parent_pubid='.$pub['uid']);
+			  while ($chapter = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result)) 	
+			   $book->appendChild($this->createContentItemEntry($chapter, $domtree));
+	 	    }		
+		   $body->appendChild($book);
+
 		}
 
 		if ($pub['pubtype'] === 'book_chapter') {
@@ -390,7 +415,7 @@ function entryToXML($pub) {
 			$article->appendChild($publicationdate);
 		}
 		
-		if (isset($pub['pages'])) $article->appendChild($this->createPagesData($pub['pages'], $domtree));	
+		if ($this->isTextValid($pub['pages'])) $article->appendChild($this->createPagesData($pub['pages'], $domtree));	
 
 		$article->appendChild($this->createDoiData($pub['doi'],$pub['uid'], $domtree));
 		return($article);
@@ -547,14 +572,10 @@ function entryToXML($pub) {
 
 	function createPagesData($pages, $domtree) {
 	   
-		$pages_entry = "";
-		if (isset($pages) && strlen($pages) > 0) {
-			$pages_entry = $domtree->createElement('pages');
-			$elements = explode('-', trim($pages));
-		        if (isset($elements[0])) $pages_entry->appendChild($domtree->createElement('first_page',$elements[0]));
-		        if (isset($elements[1])) $pages_entry->appendChild($domtree->createElement('last_page',$elements[1]));
-
-		}
+		$pages_entry = $domtree->createElement('pages');
+		$elements = explode('-', trim($pages));
+	        if (isset($elements[0])) $pages_entry->appendChild($domtree->createElement('first_page',$elements[0]));
+	        if (isset($elements[1])) $pages_entry->appendChild($domtree->createElement('last_page',$elements[1]));
   		return $pages_entry;
 
 	}

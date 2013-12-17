@@ -105,6 +105,7 @@ class tx_pubdb_flexform {
 	} */
 	
 	function xmlField($PA, $fobj) {
+		$xml = new tx_pubdb_toxml();
 		$uid = $PA['row']['uid'];
 		if (isset($PA['parameters']['rows'])) {
 			$rows = $PA['parameters']['rows'];
@@ -127,7 +128,7 @@ class tx_pubdb_flexform {
 		if (!isset($uid) || $uid === 0) {
 		        $formField .= '<span style="color:red">No record UID given or an error occurred</span>';
 		} else {
-			$xml = new tx_pubdb_toxml();
+			
 			$xmlStr = $xml->entryToXML($PA['row']);
 			$formField  .= '<textarea class="tceforms-textarea formField2 resizable" rows="'.$rows.'" cols="'.$cols.'" readonly> '.$xmlStr.'</textarea>';
 			
@@ -143,6 +144,18 @@ class tx_pubdb_flexform {
 		
 		$formField .= '<tr><td class="formField-field" colspan="2" style="padding-top: 10px; padding-bottom: 10px"><span class="class-main14"><a style="text-decoration: underline" href="../'.$path.'">'.
 		$GLOBALS['LANG']->sl('LLL:EXT:pubdb/locallang_db.xml:tx_pubdb_data.xml.downloadfile').'</a></span></tr></td>';		
+
+		$hasChildren = array('journal','conference_proceedings','book');
+		debug($PA['row']['pubtype']);
+		if (in_array($PA['row']['pubtype'], $hasChildren)) {
+		  $xmlMetaStr = $xml->entryToXML($PA['row'],1);
+		  $path = 'typo3temp/tx_pubdb/'.$fileName.'_meta.xml';	
+		  t3lib_div::writeFile(PATH_site.$path, $xmlMetaStr);
+		$formField .= '<tr><td class="formField-field" colspan="2" style="padding-top: 10px; padding-bottom: 10px"><span class="class-main14"><a style="text-decoration: underline" href="../'.$path.'">'.
+		$GLOBALS['LANG']->sl('LLL:EXT:pubdb/locallang_db.xml:tx_pubdb_data.xml.downloadfileMeta').'</a></span></tr></td>';		
+		}
+
+
 		$formField .= '</tbody></table>';
 
 		return $formField;
