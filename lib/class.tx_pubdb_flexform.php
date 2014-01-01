@@ -30,7 +30,7 @@
 
 require_once(PATH_tslib.'class.tslib_pibase.php');
 require_once(PATH_typo3conf.'ext/pubdb/lib/class.tx_pubdb_toxml.php');
-#require_once('t3lib/class.t3lib_div.php');
+require_once(PATH_typo3conf.'ext/pubdb/lib/class.tx_pubdb_utils.php');
 
 class tx_pubdb_flexform {
 
@@ -146,8 +146,9 @@ class tx_pubdb_flexform {
 		$GLOBALS['LANG']->sl('LLL:EXT:pubdb/locallang_db.xml:tx_pubdb_data.xml.downloadfile').'</a></span></tr></td>';		
 
 		$hasChildren = array('journal','conference_proceedings','book');
-		debug($PA['row']['pubtype']);
-		if (in_array($PA['row']['pubtype'], $hasChildren)) {
+		
+		// if pub includes children show also a link to a meta-only xml file
+		if (tx_pubdb_utils::typeHasChildren($PA['row']['pubtype'])) {
 		  $xmlMetaStr = $xml->entryToXML($PA['row'],1);
 		  $path = 'typo3temp/tx_pubdb/'.$fileName.'_meta.xml';	
 		  t3lib_div::writeFile(PATH_site.$path, $xmlMetaStr);

@@ -15,6 +15,7 @@
           <viewtype>
 	     <TCEforms>
 	     <label>LLL:EXT:pubdb/locallang_db.xml:tt_content.flexform.whattoview</label>
+	      <onChange>reload</onChange>
 	     <config>
 		     <type>select</type>
 		     <items type="array">
@@ -30,12 +31,20 @@
 				<numIndex index="0">LLL:EXT:pubdb/locallang_db.xml:tt_content.flexform.singleview</numIndex>
 			     	<numIndex index="1">SINGLE</numIndex>
 		     	</numIndex>
-			<numIndex index="3" type="array">
+			 <numIndex index="3" type="array">
 				<numIndex index="0">LLL:EXT:pubdb/locallang_db.xml:tt_content.flexform.orderfield</numIndex>
 				<numIndex index="1">ORDER</numIndex>
-		     	</numIndex>
+		    </numIndex>
+		    <numIndex index="4" type="array">
+				<numIndex index="0">LLL:EXT:pubdb/locallang_db.xml:tt_content.flexform.remoteaccess</numIndex>
+				<numIndex index="1">REMOTE</numIndex>
+		    </numIndex>
+		     <numIndex index="5" type="array">
+				<numIndex index="0">LLL:EXT:pubdb/locallang_db.xml:tt_content.flexform.showremote</numIndex>
+				<numIndex index="1">SHOWREMOTE</numIndex>
+		    </numIndex>
 		     </items>
-		     <size>5</size>
+		     <size>1</size>
 		     <minitems>0</minitems>
 		     <maxitems>1</maxitems>
 	     </config>
@@ -44,6 +53,7 @@
 	     <resultnum>
 		     <TCEforms>
 			     <label>LLL:EXT:pubdb/locallang_db.xml:tt_content.flexform.maxresults</label>
+			     <displayCond>FIELD:viewtype:IN:LIST,SHOWREMOTE</displayCond>
 			     <config>
 				     <type>select</type>
 				     <items type="array">
@@ -78,10 +88,11 @@
 	     <category>
 		     <TCEforms>
 			     <label>LLL:EXT:pubdb/locallang_db.xml:tt_content.flexform.category</label>
+			     <displayCond>FIELD:viewtype:=:LIST</displayCond>
 				     <config>
 					     <type>select</type>
 					     <maxitems>100</maxitems>
-					     <minitems>1</minitems>
+					     <minitems>0</minitems>
 					     <size>10</size>
 					     <itemsProcFunc>tx_pubdb_tca->genList</itemsProcFunc>
 					     <items>
@@ -96,6 +107,7 @@
 	     <catrel>
 		     <TCEforms>	
 				<label>LLL:EXT:pubdb/locallang_db.xml:tt_content.flexform.catrel</label>
+				<displayCond>FIELD:viewtype:=:LIST</displayCond>
 			     <config>	
 				     <type>select</type>
 				     <items type="array">
@@ -117,6 +129,7 @@
 	    <notcategory>
 		     <TCEforms>
 			     <label>LLL:EXT:pubdb/locallang_db.xml:tt_content.flexform.notcategory</label>
+			     <displayCond>FIELD:viewtype:=:LIST</displayCond>
 				     <config>
 					     <type>select</type>
 					     <maxitems>100</maxitems>
@@ -132,9 +145,60 @@
 				     </config>
 		     </TCEforms>
 	     </notcategory>	
-	     <sortmode>
+		<showsearchform>
+			<TCEforms>
+				<label>LLL:EXT:pubdb/locallang_db.xml:tt_content.flexform.showsearch</label>
+				<displayCond>FIELD:viewtype:=:LIST</displayCond>
+				<config>
+				<type>check</type>
+				</config>
+				<default>0</default>
+			</TCEforms>
+		</showsearchform>
+		<remoteurl>
+			<TCEforms>
+				<label>LLL:EXT:pubdb/locallang_db.xml:tt_content.flexform.remoteurl</label>
+				<displayCond>FIELD:viewtype:=:SHOWREMOTE</displayCond>
+				<config>
+				<type>input</type>
+				<size>30</size>
+				</config>
+			</TCEforms>
+		</remoteurl>  
+		<remotepid>
+			<TCEforms>
+				<label>LLL:EXT:pubdb/locallang_db.xml:tt_content.flexform.remotepid</label>
+				<displayCond>FIELD:viewtype:=:SHOWREMOTE</displayCond>
+				<config>
+				<type>input</type>
+				<size>30</size>
+				</config>
+			</TCEforms>
+		</remotepid>  
+	   <remotecategories>
+			<TCEforms>
+				<label>LLL:EXT:pubdb/locallang_db.xml:tt_content.flexform.remotecategories</label>
+				<displayCond>FIELD:viewtype:=:SHOWREMOTE</displayCond>
+				<config>
+				<type>input</type>
+				<size>30</size>
+				</config>
+			</TCEforms>
+		</remotecategories>  
+		 <limit>
+			<TCEforms>
+				<label>LLL:EXT:pubdb/locallang_db.xml:tt_content.flexform.limit</label>
+				<displayCond>FIELD:viewtype:=:SHOWREMOTE</displayCond>
+				<config>
+				<type>input</type>
+				<size>30</size>
+				</config>
+			</TCEforms>
+		</limit>  
+		 <sortmode>
 		     <TCEforms>
 			     <label>LLL:EXT:pubdb/locallang_db.xml:tt_content.flexform.sortby</label>
+			     <displayCond>FIELD:viewtype:IN:LIST,SHOWREMOTE</displayCond>
 			     <config>
 				     <type>select</type>
 				     <items type="array">
@@ -161,9 +225,10 @@
 			     </config>
 		     </TCEforms>
 	     </sortmode>
-	     <order>
+		 <order>
 		     <TCEforms>
 			     <label>LLL:EXT:pubdb/locallang_db.xml:tt_content.flexform.inversesort</label>
+			     <displayCond>FIELD:viewtype:IN:LIST,SHOWREMOTE</displayCond>
 			     <config>
 				     <type>select</type>
 				     <items type="array">
@@ -180,16 +245,6 @@
 			     </config>
 		     </TCEforms>
 		</order>
-		<showsearchform>
-			<TCEforms>
-				<label>LLL:EXT:pubdb/locallang_db.xml:tt_content.flexform.showsearch</label>
-				<config>
-				<type>check</type>
-				</config>
-				<default>0</default>
-			</TCEforms>
-		</showsearchform>
-	     
 	   </el>
        	</ROOT>
 </sDEF>

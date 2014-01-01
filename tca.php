@@ -273,8 +273,8 @@ $TCA['tx_pubdb_data'] = Array (
 			'displayCond' => 'FIELD:pubtype:IN:journal',
 			'config' => Array (
 				'type' => 'input',	
-				'size' => '30',
-                                'max' => '30'
+				'size' => '10',
+                                'max' => '10'
 			)
 		),
 		'pages' => Array (		
@@ -488,7 +488,7 @@ $TCA['tx_pubdb_data'] = Array (
 		'contributors' => Array(
 			'exclude' => 1,
 			'label' => 'LLL:EXT:pubdb/locallang_db.xml:tx_pubdb_contributors',
-			'displayCond' => 'FIELD:pubtype:IN:conference,book,book_chapter,report_paper',
+			'displayCond' => 'FIELD:pubtype:IN:conference,conference_proceedings,book,book_chapter,report_paper',
 			'config' => Array(
 				'type' => 'inline',			
 				'foreign_table' => 'tx_pubdb_pub_contributors',
@@ -519,7 +519,13 @@ $TCA['tx_pubdb_data'] = Array (
 	),
 	// styles: 0: default, 1: Meta, 2: headers; 3: main content, 4: extra,5 : advanced
 	'types' => Array (
-		'0' => Array('showitem' => 'pubtype;;;;1-1-1,subpubtype;;;;1-1-1,booktype;;;;1-1-1,parent_pubid,author;;;;3-3-3,author_email;;;;3-3-3,author_address;;;;3-3-3,title;;;;3-3-3,abbrev_title;;;;3-3-3, subtitle;;;;3-3-3, theme;;;;3-3-3,contributors,coauthors;;;;3-3-3,  publisher;;;;3-3-3, location;;;;3-3-3, year;;;;3-3-3, isbn;;;;3-3-3,isbn2;;;;3-3-3,doi;;;;3-3-3,series;;;;3-3-3,pages;;;;3-3-3,edition;;;;3-3-3,number;;;;3-3-3,startdate;;;;3-3-3,enddate;;;;3-3-3,issue;;;;3-3-3,internalNumber;;;;1-1-1, abstract;;;richtext[paste|bold|italic|underline|formatblock|class|left|center|right|orderedlist|unorderedlist|outdent|indent|link|image]:rte_transform[mode=ts], file;;;;4-4-4, fileType;;;;4-4-4, openFile;;;;4-4-4, openFileType;;;;4-4-4, category;;;;1-1-1, hashardcopy;;1;;1-1-1,  price;;;;4-4-4, reducedprice;;;;4-4-4,hascrossrefentry;;1;;1-1-1,xml;;;;1-1-1')
+		'0' => Array('showitem' => 'pubtype;;;;1-1-1,subpubtype;;;;1-1-1,booktype;;;;1-1-1,parent_pubid,author;;;;3-3-3,author_email;;;;3-3-3,'.
+					'author_address;;;;3-3-3,title;;;;3-3-3,abbrev_title;;;;3-3-3, subtitle;;;;3-3-3, theme;;;;3-3-3,contributors,coauthors;;;;3-3-3,'.
+					'publisher;;;;3-3-3, location;;;;3-3-3, year;;;;3-3-3, isbn;;;;3-3-3,isbn2;;;;3-3-3,doi;;;;3-3-3,series;;;;3-3-3,pages;;;;3-3-3,'.
+					'edition;;;;3-3-3,number;;;;3-3-3,startdate;;;;3-3-3,enddate;;;;3-3-3,issue;;;;3-3-3,internalNumber;;;;1-1-1,'.
+					' abstract;;;richtext[paste|bold|italic|underline|formatblock|class|left|center|right|orderedlist|unorderedlist|outdent|indent|link|image]:rte_transform[mode=ts],'.
+					'file;;;;4-4-4, fileType;;;;4-4-4, openFile;;;;4-4-4, openFileType;;;;4-4-4, category;;;;1-1-1, hashardcopy;;1;;1-1-1,  price;;;;4-4-4,'.
+					'reducedprice;;;;4-4-4,hascrossrefentry;;1;;1-1-1,xml;;;;1-1-1')
 	),
 );
 

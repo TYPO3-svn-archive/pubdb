@@ -1,24 +1,25 @@
 plugin.pubdb {
 	_CSS_DEFAULT_STYLE (
          
-	.tx_pubdb-list-container { border-bottom: dotted 1px; margin-top: 10px }
-        .tx_pubdb-list-item 	 { padding: 0.5em;} 
-        .tx_pubdb-list-title	 { float: left; font-weight: bold; }
-        .tx_pubdb-list-author    {  }
+	.tx_pubdb-list-container { border-bottom: dotted 1px; margin-top: 0.5em, margin-bottom: 0.5em;}
+        .tx_pubdb-list-item 	 { line-height: 150%; margin-top: 0.5em; margin-bottom: 0.5em;} 
         .tx_pubdb-list-more      { }
         .tx_pubdb-list-file      { }
         .tx_pubdb-list-pagebrowser { text-align: center; padding: 0.5em;}
 
         .tx_pubdb-single-container { }
         .tx_pubdb-single-item 	 { padding: 1em;} 
-	.tx_pubdb-single-doi {padding-bottom: 1em; font-weight: bold;}
+		.tx_pubdb-single-doi {padding-bottom: 1em; font-weight: bold;}
         .tx_pubdb-single-title H2  { }
         .tx_pubdb-single-subtitle { font-style: italic; font-size: 1.2em};
-	.tx_pubdb-single-coauthors {font-style: italic; }
+		.tx_pubdb-single-coauthors {font-style: italic; }
         .tx_pubdb-single-author H3  { font-style: italic; }
-        .tx_pubdb-single-file      {  }
-        .tx_pubdb-single-abstract  {  }
-        .tx_pubdb-single-returnlink  { text-align: right; }
+        .tx_pubdb-single-file  {  }
+		.tx_pubdb-single-parent { color: #6e6e6e; border-bottom: 1px solid #CCCCCC; padding-bottom: 1em; margin-bottom: 1em;}       
+        .tx_pubdb-single-parent-title { font-size: 2em; margin: 0; padding:0;}
+        .tx_pubdb-single-parent-meta { margin-top: 0.5em; padding: 0; margin-bottom: 1em; }
+        .tx_pubdb-single-abstract { padding-left: 2em; padding-right: 2em; font-style: italic; text-align: justify; }
+        .tx_pubdb-single-returnlink  { text-align: left; }
 
         .tx_pubdb-search-container { background-color: #CCCCCC; }
         .tx_pubdb-search-container H2 {  }

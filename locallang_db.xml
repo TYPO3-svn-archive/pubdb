@@ -99,18 +99,20 @@
 			<label index="tt_content.list_type_pi1">Pubdb</label>
 			<label index="tt_content.flexform.nocategory">All categories</label>
 			<label index="tt_content.flexform.nothing">Nothing (for search page)</label>
-			<label index="tt_content.flexform.category">Category (LIST)</label>
-			<label index="tt_content.flexform.notcategory">Excluded Categories (LIST)</label>
+			<label index="tt_content.flexform.category">Category</label>
+			<label index="tt_content.flexform.notcategory">Excluded Categories</label>
 			<label index="tt_content.flexform.whattoview">What to view</label>
 			<label index="tt_content.flexform.maxresults">Max. number of items per page</label>
 			<label index="tt_content.flexform.listview">View list</label>
 			<label index="tt_content.flexform.singleview">View single publication</label>
 			<label index="tt_content.flexform.orderfield">View order form</label>
+			<label index="tt_content.flexform.remoteaccess">Page providing remote access to the pubdb</label>
+			<label index="tt_content.flexform.showremote">Show records from a remote database</label>
 			<label index="tt_content.flexform.xmlfield">View crossref xml</label>
 			<label index="tt_content.flexform.inversesort">Order</label>
 			<label index="tt_content.flexform.desc_order">descending</label>
 			<label index="tt_content.flexform.asc_order">ascending</label>
-			<label index="tt_content.flexform.sortby">Sort by (LIST)</label>
+			<label index="tt_content.flexform.sortby">Sort by</label>
 			<label index="tt_content.flexform.sortbyyear">Year</label>
 			<label index="tt_content.flexform.sortbytitle">Title</label>
 			<label index="tt_content.flexform.sortbynumber">Number</label>
@@ -120,9 +122,13 @@
 			<label index="tt_content.flexform.orderemail">E-mail (for order page)</label>
 			<label index="tt_content.flexform.returnpid">Page ID for the return link</label>
 			<label index="tt_content.flexform.showsearch">Show search form (LIST)</label>
+			<label index="tt_content.flexform.remotecategories">Comma separated list of remote publication categories</label>
 			<label index="tt_content.flexform.generalsettings">General settings</label>
 			<label index="tt_content.flexform.othersettings">Other settings</label>
 			<label index="tt_content.flexform.catrel">Link categories by</label>
+			<label index="tt_content.flexform.limit">Limit</label>
+			<label index="tt_content.flexform.remoteurl">Remote dababase URL</label>
+			<label index="tt_content.flexform.remotepid">External page id (optional)</label>
 		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="tx_pubdb_data">Pubdb Publikationen</label>
@@ -218,18 +224,20 @@
 			<label index="tt_content.list_type_pi1">Pubdb</label>
 			<label index="tt_content.flexform.nocategory">Alle Kategorien</label>
 			<label index="tt_content.flexform.nothing">Nichts (für Suchseite)</label>
-			<label index="tt_content.flexform.category">Kategorie (LIST)</label>
+			<label index="tt_content.flexform.category">Kategorie</label>
 			<label index="tt_content.flexform.notcategory">Ausgeschlossene Kategorien (LIST)</label>
 			<label index="tt_content.flexform.whattoview">Was soll angezeigt werden</label>
 			<label index="tt_content.flexform.maxresults">Max. Einträge pro Seite</label>
 			<label index="tt_content.flexform.listview">Zeige Liste</label>
 			<label index="tt_content.flexform.singleview">Zeige einzelne Publikation</label>
 			<label index="tt_content.flexform.orderfield">Zeige Bestellformular</label>
+			<label index="tt_content.flexform.remoteaccess">Seite für Fernzugriff auf die Datenbank</label>
+			<label index="tt_content.flexform.showremote">Anzeige von Datensätzen von einer externen Seite</label>
 			<label index="tt_content.flexform.xmlfield">Zeige XML</label>
 			<label index="tt_content.flexform.inversesort">Sortierung</label>
 			<label index="tt_content.flexform.desc_order">absteigend</label>
 			<label index="tt_content.flexform.asc_order">aufsteigend</label>
-			<label index="tt_content.flexform.sortby">Sortiere nach (LIST)</label>
+			<label index="tt_content.flexform.sortby">Sortiere nach</label>
 			<label index="tt_content.flexform.sortbyyear">Jahr</label>
 			<label index="tt_content.flexform.sortbytitle">Titel</label>
 			<label index="tt_content.flexform.sortbynumber">Nummer</label>
@@ -238,10 +246,14 @@
 			<label index="tt_content.flexform.orderpid">Seiten ID der Bestellseite</label>
 			<label index="tt_content.flexform.orderemail">E-mail (für Bestellung)</label>
 			<label index="tt_content.flexform.returnpid">Seiten ID für den zurück link</label>
-			<label index="tt_content.flexform.showsearch">Zeige Suchformular (LIST)</label>
+			<label index="tt_content.flexform.showsearch">Zeige Suchformular</label>
+			<label index="tt_content.flexform.remotecategories">Komma separierte Liste von externen Kategorien</label>
 			<label index="tt_content.flexform.generalsettings">Allgemeine Einstellungen</label>
 			<label index="tt_content.flexform.othersettings">Weitere Einstellungen</label>
 			<label index="tt_content.flexform.catrel">Verknüpfe Kategorien mit</label>
+			<label index="tt_content.flexform.limit">Limit</label>
+			<label index="tt_content.flexform.remoteurl">URL zur externen Zugriffsseite</label>
+			<label index="tt_content.flexform.remotepid">ID der externen Seite (optional)</label>
 		</languageKey>
 					
 	</data>

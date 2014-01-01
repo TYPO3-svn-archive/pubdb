@@ -76,6 +76,11 @@ class tx_pubdb_utils {
 	  	}
 		return $res;
 	}
+	
+	static function typeHasChildren($pubtype) {
+		$hasChildren = array('journal','conference_proceedings','book');
+		return  in_array($pubtype, $hasChildren);
+	}
 
 }
 

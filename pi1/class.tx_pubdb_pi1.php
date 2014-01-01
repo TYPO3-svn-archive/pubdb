@@ -2,7 +2,7 @@
 /***************************************************************
  *  Copyright notice
 *
-*  (c) 2007 Johannes Kropf <johannes@kropf.at>
+*  (c) 2013 Johannes Kropf <johannes@kropf.at>
 *  All rights reserved
 *
 *  This script is part of the TYPO3 project. The TYPO3 project is
@@ -31,20 +31,19 @@
 require_once(PATH_tslib.'class.tslib_pibase.php');
 require_once(PATH_typo3conf.'ext/pubdb/lib/class.tx_pubdb_toxml.php');
 require_once(PATH_typo3conf.'ext/pubdb/lib/class.tx_pubdb_utils.php');
+require_once(PATH_typo3conf.'ext/pubdb/pi1/class.tx_pubdb_dbaccess.php');
 
 class tx_pubdb_pi1 extends tslib_pibase {
 	var $scriptRelPath = 'pi1/class.tx_pubdb_pi1.php';	// Path to this script relative to the extension dir.
 	var $extKey = 'pubdb';	// The extension key.
 	var $pi_checkCHash = TRUE;
 	var $ffdata;
-	var $singlepageID;
 	var $showSearchForm = 0;
 	var $prefixId = 'tx_pubdb_pi1'; // Same as class name
 	var $standardTemplate = 'typo3conf/ext/pubdb/pi1/template.tmpl';
-	//  $this->local_cObj = t3lib_div::makeInstance('tslib_cObj');
-	/*
-	$filelinks .= $this->local_cObj->filelink($val, $this->conf(['newsFiles.']) ;
-			*/
+	var $db;
+	var $usergroups = '';
+	
 	/**
 	 * The main method of the PlugIn
 	 *
@@ -56,19 +55,20 @@ class tx_pubdb_pi1 extends tslib_pibase {
 		$this->conf=$conf;
 		$this->pi_setPiVarDefaults();
 		$this->pi_loadLL();
-
+	    
 		$this->pi_initPIflexForm();
 
 		// load the flexform data array
 		$this->ffdata = $this->cObj->data['pi_flexform'];
 
-		$this->singlepageID = $this->pi_getFFValue($this->ffdata,'singlepid','sOtherSettings');
 		$this->showSearchForm = $this->pi_getFFValue($this->ffdata,'showsearchform','sDEF');
-
+		$this->db = t3lib_div::makeInstance('pubdbAccess');
 			
+		$this->usergroups = $GLOBALS['TSFE']->fe_user->user['usergroup'];
+		//debug($this->usergroups,"usergroups");
+		
 		// get view mode from the flexform data
 		$viewmode = $this->pi_getFFValue($this->ffdata,'viewtype','sDEF');
-		//$content .= "viewmode: ".$viewmode."<br><br>";
 
 		switch($viewmode) {
 			case 'NONE': $content .= "View mode not configured yet.";
@@ -79,11 +79,102 @@ class tx_pubdb_pi1 extends tslib_pibase {
 			break;
 			case 'ORDER': $content .= $this->generateOrderView();
 			break;
+			case 'REMOTE': return $this->getPublicationsByRemoteSite();
+			break;
+			case 'SHOWREMOTE': $content .= $this->renderRemotePublications();
+			break;
+			
 		}
 
 		return $this->pi_wrapInBaseClass($content);
 	}
 
+	/**
+	 * Generating content for a remote site accessing publications of this database via a HTTP GET request
+	 **/
+	function getPublicationsByRemoteSite() {
+		$content = '';
+		$sortby = $this->piVars['sortby'].' '.$this->piVars['order'];		
+ 		
+		// get pubs by categories
+		if (isset($this->piVars['categories'])) {
+  			$catIds = $this->db->fetchCategoriesByNameAsString($this->piVars['categories']);
+  			$pubs = $this->db->fetchPubsByCategories($catIds,'','',$sortby, $this->piVars['limit']);
+  			$pubs = $this->db->fetchAndAddParents($pubs);
+  		// get a single publication	
+		} elseif (isset($this->piVars['pubid'])) {
+			$pubs = $this->db->fetchSinglePub($this->piVars['pubid']);
+			$pubs = $this->db->fetchAndAddParents($pubs);
+			$pubs['children'] = $this->db->fetchChildren($this->piVars['pubid']);
+		}
+				
+	    $content = json_encode($pubs);									
+
+	    // return the result array between to markes	
+		return '###REQUEST_START###'.$content.'###REQUEST_END###';
+	}
+	
+	
+	function renderRemotePublications() {
+		
+		if (isset($this->piVars['pubid']))
+			$mode = "single";
+	    else 
+			$mode = "list";
+		
+		// set the singlepage pid to the current page
+		$singlepid = $GLOBALS['TSFE']->id;
+		
+		$remoteurl = $this->pi_getFFValue($this->ffdata,'remoteurl','sDEF');
+		$rpid = $this->pi_getFFValue($this->ffdata,'remotepid','sDEF');
+		if (isset($rpid) && $rpid!=='' && $rpid !== 0)
+			$confArray['id'] = $rpid;  
+		$confArray['tx_pubdb_pi1[sortby]'] = $this->pi_getFFValue($this->ffdata,'sortmode','sDEF');
+		$confArray['tx_pubdb_pi1[order]'] = $this->pi_getFFValue($this->ffdata,'order','sDEF');
+		$confArray['tx_pubdb_pi1[limit]'] =  $this->pi_getFFValue($this->ffdata,'limit','sDEF');
+
+		if ($mode === 'single')		
+			$confArray['tx_pubdb_pi1[pubid]'] = $this->piVars['pubid'];
+		else
+			$confArray['tx_pubdb_pi1[categories]'] = $this->pi_getFFValue($this->ffdata,'remotecategories','sDEF');
+ 		
+		$confArray['tx_pubdb_pi1[pid]'] =  $singlepid;
+		
+		$request = t3lib_div::makeInstance('t3lib_http_Request', $remoteurl);
+		$request->setMethod('GET');
+		$url = $request->getUrl();
+		$url->setQueryVariables($confArray);
+		
+		try {
+			$response = $request->send();
+			//debug($response);
+		} catch(Exception $e) {
+			debug($e);
+		}
+		//$content .= "url: ".$url."</br>";
+		preg_match("/###REQUEST_START###(.+)###REQUEST_END###/s" ,$response->getBody(), $match);
+		
+		$pubs = json_decode($match[1],TRUE);
+		//$content .= print_r($pubs, true);
+	    
+		if ($mode === 'list')
+			$content .= $this->renderList($pubs, $singlepid);
+		elseif ($mode === 'single') {
+			// fetch first publication
+			$singlepubArray = $pubs['pubs'];
+			$pub = reset($singlepubArray);
+			
+			// fetch parent
+			$parentPubArray = $pubs['parents'];
+			$parent = reset($parentPubArray);
+									
+			$content .= $this->renderSingleView($pub, $parent, $pubs['children'],'',$GLOBALS['TSFE']->id);
+		}
+		
+		//$content .= $response->getBody();
+		return $content;
+		
+	}
 
 	/*
 	 *   Creation of a marker for the tt_news plugin to allow a pubdb entry getting linked at a news entry
@@ -104,66 +195,20 @@ class tx_pubdb_pi1 extends tslib_pibase {
 
 	}
 
-	/*
-	 * Get all categories the user is allowed to download files
-	*/
-
-	function getAllowedCategories() {
-		$allowedCat = array();
-
-		// get front end user groups of the current user
-		$usergroups= explode(',',$GLOBALS['TSFE']->fe_user->user['usergroup']);
-		//t3lib_utility_Debug::debug($usergroups,'usergroups');
-
-		// get category - web user group relations
-		$result=$GLOBALS['TYPO3_DB']->exec_SELECTquery('*','tx_pubdb_category_fegroups_mm','');
-		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result))  {
-			if (in_array($row['uid_foreign'],$usergroups))
-				$allowedCat[$row['uid_local']] = 1;
-			else {
-				if (!key_exists($row['uid_local'],$allowedCat))
-					$allowedCat[$row['uid_local']] = 0;
-			}
-		}
-
-		// get categories without relation to a fe group
-		$result=$GLOBALS['TYPO3_DB']->exec_SELECTquery('uid','tx_pubdb_categories','');
-		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result)) {
-			if (!array_key_exists($row['uid'],$allowedCat))
-				$allowedCat[$row['uid']] = 1;
-		}
-
-		//t3lib_utility_Debug::debug($allowedCat,'allowedcat');
-
-		return $allowedCat;
-
-	}
-
 	
-	function getContributorsForPubids($pubids) {
-		// fetch contributors
-		$contributorsResult =  $GLOBALS['TYPO3_DB']->exec_SELECTquery('c.*,r.pubid,r.contributorid,r.role,r.contributorsort,r.pubsort',
-										'tx_pubdb_contributors c JOIN tx_pubdb_pub_contributors r ON c.uid = r.contributorid ',
-										'r.pubid IN ('.$pubids.') AND r.deleted=0 AND c.deleted=0',
-										'','r.pubid,r.pubsort');
-		while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($contributorsResult))  {
-			$cont[$row['pubid']][] = $row;
-			
-		}
-	//	t3lib_utility_Debug::debug($cont,'contributors');
-		return $cont;
-	}
 	
-
 	
 	
 	/*
 	 * Generates the list view page with a given list of publications
 	*/
-	function showList($pubs, $parents, $contributors) {
-
+	function renderList($pubs, $singlepid=0) {
+		
+		//debug($pubs);
+		
 		// get the singlepage pid
-		$singlepid = $this->pi_getFFValue($this->ffdata,'singlepid','sOtherSettings');
+		if ($singlepid === 0)
+			$singlepid = $this->pi_getFFValue($this->ffdata,'singlepid','sOtherSettings');
 
 		// get the orderpage pid
 		$orderpid =  $this->pi_getFFValue($this->ffdata,'orderpid','sOtherSettings');
@@ -176,33 +221,27 @@ class tx_pubdb_pi1 extends tslib_pibase {
 
 
 		$subpart_browser = $this->cObj->getSubpart($template,"###LIST_BROWSE_TEMPLATE###");
-		// -------------------------------- check download permissioin ---------------------
-
-		$allowedCat = $this->getAllowedCategories();
-
-		// get publication to category relations
-		$pub2cat = array();
-		$result=$GLOBALS['TYPO3_DB']->exec_SELECTquery('uid_local,uid_foreign','tx_pubdb_data_category_mm','');
-		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result))
-			$pub2cat[$row['uid_local']][] = $row['uid_foreign'];
-
+	
 		// --------------------------- show page browser ------------------------------
 		$pagebrowser = '';
 		$start = 0;
 		$max = $this->pi_getFFValue($this->ffdata,'resultnum','sDEF');
-			
+		$n_pubs = sizeof($pubs['pubs']);
+		
+		//debug($n_pubs, '# of pubs');
+		
 		$end = $max;
-		if ($end > sizeof($pubs)) $end = sizeof($pubs);
+		if ($end > $n_pubs) $end = $n_pubs;
 
 		if (!isset($this->piVars['pnum'])) $this->piVars['pnum'] = 1;
 			
-		if (sizeof($pubs) > $max && $max>0) {
+		if ($n_pubs > $max && $max>0) {
 
 			$next = $this->piVars['pnum'] + 1;
 			$prev = $this->piVars['pnum'] - 1;
-			$last = sizeof($pubs)/$max;
+			$last = $n_pubs/$max;
 
-			if (isset($this->piVars['pnum']) && $this->piVars['pnum'] > 1)
+			if ($this->piVars['pnum'] > 1)
 				$pagebrowser .= $this->pi_linkTP_keepPIvars('<<',array('pnum' => $prev)).'&nbsp;';
 
 			for ($i=0; $i <=  $last; $i++)  {
@@ -223,99 +262,32 @@ class tx_pubdb_pi1 extends tslib_pibase {
 
 
 		// compute indizes
-		if (isset($this->piVars['pnum'])) {
-
-			$start = $max* ( $this->piVars['pnum'] - 1);
-			$end = $max* $this->piVars['pnum'];
-			if ($end > sizeof($pubs))
-				$end = sizeof($pubs);
-
-		}
+		$start = $max* ( $this->piVars['pnum'] - 1);
+		$end = $max* $this->piVars['pnum'];
+		if ($end > $n_pubs)	$end = $n_pubs;
 
 		// --------------------------- render list of publications ------------------------------------
 
-		if (sizeof($pubs) == 0)
+		if ($n_pubs === 0)
 			$content .= "<p>".$this->pi_getLL('list.noentries')."<p>";
+	
+		$publications = $pubs['pubs'];
 
+		// get first publication
+		$pub = reset($publications);
+
+		for ($i=1; $i <= $start; $i++)
+			$pub = next($publications);
+		
 		for ($i=$start; $i<$end; $i++) {
-			$row = $pubs[$i];
 
-			$p_title = '';
-			$p_author = '';
-			$p_file = '';
-			$p_more = '';
-			$p_order = '';
-			$num_year = '';
-			$p_year = '';
-			$p_publisher = '';
-			$p_subtitle = '';
-			$p_location = '';
+		 	$params = array( $this->prefixId => array( 'pubid' => $pub['uid'], ppid => $GLOBALS['TSFE']->id));
 
+		 	// render list item
+			$content .= $this->renderListItem($pub, $params, $pubs, $singlepid);
 
-			if ($row['number'] != '' && $row['year'] != '')
-				$num_year = $row['number'].'/'.$row['year'];
-
-			$download = FALSE;
-				
-			//t3lib_utility_Debug::debug($pub2cat,'pub2cat');
-			if (sizeof($pub2cat[$row['uid']]) > 0 ) {
-				foreach ($pub2cat[$row['uid']] as $c) {
-					if ($allowedCat[$c] === 1) {
-						$download = TRUE;
-						break;
-					}
-				}
-			}
-			// check download for foreign data
-			if (isset($row['localCat']) && $allowedCat[$row['localCat']])
-				$download = TRUE;
-
-				
-
-			$fileTypeLink = "filetype.".$row['openFileType'];
-
-
-			// insert title
-			if ($row['openFile'] != '' || $row['file'] != '')
-				$p_file .= '<br/><b>'.$this->pi_getLL('download_title').'</b><br/>';
-
-
-			// free downloadable files
-			if ($row['openFile']!='') {
-				$files = explode(',',$row['openFile']);
-				foreach ($files as $f) {
-					if (isset($row['isForeign']))
-						$p_file .= '<a href=" 	'.$this->conf['foreignDB.'][$row['localCat'].'.']['filePath'].'/'.$f.'">'.$f.'</a><br/>';
-					else
-						$p_file .= '<a target="_blank" href="fileadmin/user_upload/tx_pubdb/'.$f.'">'.$f.'</a><br/>';
-				}
-			}
-
-			$fileTypeLink = "filetype.".$row['fileType'];
-		 if ($row['file']!='') {
-		 	$files = explode(',',$row['file']);
-		 	foreach ($files as $f) {
-		 		if ($download) {
-		 			if (isset($row['isForeign']))
-		 				$p_file .= '<a href=" '.$this->conf['foreignDB.'][$row['localCat'].'.']['filePath'].'/'.$f.'">'.$f.'</a><br/>';
-		 			else
-		 				$p_file .= '<a target="_blank" href="fileadmin/user_upload/tx_pubdb/'.$f.'">'.$f.'</a><br/>';
-		 		}
-		 		else
-		 			$p_file .= $f.'<br/>';
-				}
-		 }      //  else $p_file = $this->pi_getLL('download');
-
-
-
-
-		 if (isset($row['isForeign'])) {
-		 	$params = array( $this->prefixId => array( 'pubid' => $row['uid'], ppid => $GLOBALS['TSFE']->id,'foreign'=>1,'localCat'=>$row['localCat']));
-		 } else
-		 	$params = array( $this->prefixId => array( 'pubid' => $row['uid'], ppid => $GLOBALS['TSFE']->id));
-
-			$content .= $this->renderListItem($row, $params, $parents[$row['parent_pubid']], $contributors);
-
+			$pub = next($publications);	
+			
 		}
 		// show page browser on the bottom of list
 		$content .= $this->cObj->substituteMarkerArray($subpart_browser,$bmarkerARRAY);
@@ -329,77 +301,29 @@ class tx_pubdb_pi1 extends tslib_pibase {
 	function generateSearchResultList() {
 		
 		if ($this->piVars['search'] != '') {
-				
-			// if search string given search in the given field, else take everything
-			switch ($this->piVars['field']) {
-				case 'title': $wherecl = 'tx_pubdb_data.title LIKE "%'.$this->piVars['search'].'%" AND tx_pubdb_data.deleted="0"'; break;
-				case 'author': $wherecl = 'tx_pubdb_data.author LIKE "%'.$this->piVars['search'].'%" AND tx_pubdb_data.deleted="0"'; break;
-				case 'year': $wherecl = 'tx_pubdb_data.year LIKE "%'.$this->piVars['search'].'%" AND tx_pubdb_data.deleted="0"'; break;
-				case 'number': $wherecl = 'tx_pubdb_data.number LIKE "%'.$this->piVars['search'].'%" AND tx_pubdb_data.deleted="0"'; break;
-			}
+			
+			if ($this->piVars['field'] != '') 
+				$field = $this->piVars['field'];
+			else
+				$field = 'title';
+
+			$match = $this->piVars['search'];
+
+			$pubs = $this->db->fetchSearchResult($field,$match,$field,1000,$this->piVars['category']);
+			$pubs = $this->db->fetchAndAddParents($pubs);
+			
 		} else {
-			$wherecl = 'tx_pubdb_data.deleted="0"';
-		
-		}
-			
-		// Add NOT hidden clause
-		$wherecl .= ' AND tx_pubdb_data.hidden="0"';
-		
-		// choose category from dropdownlist (0 for all)
-		if ($this->piVars['category']=='0')
-			$result = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*','tx_pubdb_data',$wherecl);
-		else {
-			$mywherecl = 'AND '.$wherecl.' AND tx_pubdb_data_category_mm.uid_foreign="'.$this->piVars['category'].'"';
-			$result = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query('tx_pubdb_data.*','tx_pubdb_data','tx_pubdb_data_category_mm','tx_pubdb_categories',$mywherecl);
+			$content .= $this->pi_getLL('list.noentries').'<br />';
+			return $content;
 		}
 		
-		// check also foreign table if set
-		if (isset($this->conf["foreignDB."])) {
-		
-			foreach ($this->conf['foreignDB.'] as $value ) {
-				mysql_pconnect($value['dbHost'], $value['dbUser'], $value['dbPass']);
-				mysql_select_db( $value['dbName']);
-				if ( $this->piVars['category'] == $value['localCatPID'] || $this->piVars['category'] == 0) {
-					if ($this->piVars['category'] == 0) {
-						$resultForeign = mysql_query('select * FROM tx_pubdb_data WHERE '.$wherecl);
-					} else {
-						$mywherecl = $wherecl.' AND tx_pubdb_data_category_mm.uid_foreign="'.$value['catPID'].'"';
-						$resultForeign = mysql_query('select * FROM tx_pubdb_data JOIN tx_pubdb_data_category_mm ON tx_pubdb_data.uid=tx_pubdb_data_category_mm.uid_local WHERE '.$mywherecl);
-					}
-		
-					if (mysql_num_rows($resultForeign) > 0) {
-						while($row = mysql_fetch_assoc($resultForeign))  {
-							$row['isForeign'] = 1;
-							$row['localCat'] = $value['localCatPID'];
-							$publications[] = $row;
-							$pubids[] = $row['uid'];
-						}
-						$counter +=  mysql_num_rows($resultForeign);
-					}
-		
-					// fetch contributors TODO
-					//$contributors = $this->getContributorsForPubids(implode(',',$pubids));
-		
-				}
-				mysql_close();
-			}
+		if (sizeof($pubs['pubs']) === 0) {
+			$content .= $content .= $this->pi_getLL('list.noentries').'<br />';
+			return $content;
+		} else {
+			$content .= sizeof($pubs['pubs']).'&nbsp;'.$this->pi_getLL('search.entriesfound').'<br />';
+			$content .= $this->renderList($pubs);
 		}
-		
-		//$content .= 'wherecl: '.$wherecl.'<br>';
-		$counter += $GLOBALS['TYPO3_DB']->sql_num_rows($result);
-		$content .= $counter.'&nbsp;'.$this->pi_getLL('search.entriesfound').'<br />';
-		
-		if ($GLOBALS['TYPO3_DB']->sql_num_rows($result) > 0) {
-			while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result))
-				$publications[] = $row;
-				$pubids[] = $row['uid'];
-		}
-			
-		
-		$contributors = $this->getContributorsForPubids(implode(',',$pubids));
-		
-		if ($counter > 0)
-			$content .= $this->showList($publications);
 		
 		return $content;
 	}
@@ -415,34 +339,21 @@ class tx_pubdb_pi1 extends tslib_pibase {
 		$counter = 0;
 
 		if ($this->showSearchForm == 1)
-			$content .= $this->generateSearchView();
+			$content .= $this->renderSearchView(); 
 
 		// check if request is from search form
 		if (isset($this->piVars['search'])) {
-
-			$content .= $this->generateSearchResulList();
-
+			$content .= $this->generateSearchResultList();
 		} 
 		// generate list from BE page settings otherwise
 		elseif ($this->pi_getFFValue($this->ffdata,'category','sDEF') != -1) {
 
 			// get the categories and the link relation from the flexfrom data
-			$catstring = $this->pi_getFFValue($this->ffdata,'category','sDEF');
+			$catstring1 = $this->pi_getFFValue($this->ffdata,'category','sDEF');
+			$catstring2 = $this->pi_getFFValue($this->ffdata,'notcategory','sDEF');
 
 			// the AND or OR relation for categorie selection in list
 			$linkrel = $this->pi_getFFValue($this->ffdata,'catrel','sDEF');
-
-			// generate the WHERE statement
-			$wherecl = 'tx_pubdb_data.deleted=0';
-			$whereStr =  $wherecl.' AND (tx_pubdb_data_category_mm.uid_foreign=';
-			$whereStr .= str_replace(',',' OR'.' tx_pubdb_data_category_mm.uid_foreign=',$catstring);
-			$whereStr .=')';
-
-			// GROUP BY
-			$groupByStr = 'tx_pubdb_data.uid';
-
-			// SELECT
-			$selectStr = 'tx_pubdb_data.*, GROUP_CONCAT(tx_pubdb_categories.uid SEPARATOR ",") AS categories';
 		
 			// sort clause clause
 			switch ($this->pi_getFFValue($this->ffdata,'sortmode','sDEF')) {
@@ -459,201 +370,92 @@ class tx_pubdb_pi1 extends tslib_pibase {
 
 			// ORDER BY clause
 			$orderby .= ' '.$this->pi_getFFValue($this->ffdata,'order','sDEF');
-
-			if ($catstring != '') {
-
-
-				$result = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query (
-						$selectStr,
-						'tx_pubdb_data',
-						'tx_pubdb_data_category_mm',
-						'tx_pubdb_categories',
-						'AND '.$whereStr,
-						$groupByStr,
-						$orderby,
-						$limit='');
-					
-			} else
-				$result = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*','tx_pubdb_data',$wherecl,'',$orderby);
-
-		
-			while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result)) {
-				$publications[] = $row;
-
-				$pubids[] = $row['uid'];
-				if (isset($row['parent_pubid']) && $row['parent_pubid'] !== '0') {
-					$parentids[] = $row['parent_pubid'];
-				}
-			}
-			$result =  $GLOBALS['TYPO3_DB']->exec_SELECTquery('*','tx_pubdb_data','uid IN ('.implode(',',$parentids).')');
-			while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result)) {
-				$parents[$row['uid']] = $row;
-			}
-				
-			// fetch also the contributors
-			$contributors = $this->getContributorsForPubids(implode(',',$pubids)); 
-				
-			// For the categories OR link, we are ready. For the AND link, the publications with all selected categories
-			// have to get selected.
-
-			if ($linkrel == 'AND' && sizeof($publications) > 0) {
-					
-				// get the selected categories array
-				$list_cats = explode(',', $catstring);
-				$newpubs=array();
-				foreach ($publications as $p) {
-					// get the publication categories
-					$p_cats = explode(',',$p['categories']);
-
-					// check, if publication has all selected categories
-					if (sizeof(array_intersect($list_cats,$p_cats)) == sizeof($list_cats))                              $newpubs[] = $p;
-				}
-				$publications = $newpubs;
-			}
-
-
-			// check also foreign table if set
-			if (isset($this->conf["foreignDB."])) {
-
-				foreach ($this->conf['foreignDB.'] as $value ) {
-					mysql_pconnect($value['dbHost'], $value['dbUser'], $value['dbPass']);
-					mysql_select_db( $value['dbName']);
-					//t3lib_div::debug($value);
-					if ( in_array($value['localCatPID'],explode(',',$catstring)) || $catstring == '') {
-						if ($catstring == '') {
-							$resultForeign = mysql_query('select * FROM tx_pubdb_data WHERE '.$wherecl);
-						} else {
-							$mywherecl = $wherecl.' AND tx_pubdb_data_category_mm.uid_foreign="'.$value['catPID'].'"';
-							$resultForeign = mysql_query('select * FROM tx_pubdb_data,tx_pubdb_data_category_mm WHERE '.$mywherecl);
-						}
-
-						if (mysql_num_rows($resultForeign) > 0) {
-							while($row = mysql_fetch_assoc($resultForeign)) {
-								$row['isForeign'] = 1;
-								$publications[] = $row;
-							}
-							$counter +=  mysql_num_rows($resultForeign);
-						}
-					}
-					mysql_close();
-				}
-			}
-
-			$content .= $this->showList($publications, $parents, $contributors);
+			//debug($catstring1,"cat1");
+			//debug($catstring2,"cat2");
+			$publications = $this->db->fetchPubsByCategories($catstring1, $catstring2, $linkrel, $orderby);
+			
+			
+			$publications = $this->db->fetchAndAddParents($publications);
+			//debug($publications);
+			$content .= $this->renderList($publications);
 		}
-		return($content);
+			return($content);
 	}
 
+	
+	function generateSingleView() {
+		$params = t3lib_div::_GET($this->prefixId);
+		
+		// generate the return link
+		if (array_key_exists('ppubid',$params)) {
+			$parentPubId = $params['ppubid'];
+		} else
+			$parentPubId = 0;
+		
+
+		if (array_key_exists('ppid',$params))
+			$pPID = $params['ppid'];
+		else 
+			$pPID = 0;
+		
+		if (array_key_exists('pubid',$params))
+			$pubid = $params['pubid'];
+		elseif (array_key_exists('doi',$params)) {
+			// changed to pubid instead of doi part
+			$pubid = $params['doi'];
+		}
+		
+		// fetch publicaction
+		$data = $this->db->fetchSinglePub($pubid);
+		//debug($data);
+		// return, if nothing was found
+		if (sizeof($data['pubs']) === 0) {
+			$singlepage .=  $this->pi_getLL('error.noentry')." ".$pubid."!</br>";
+			return $singlepage;
+		}
+		
+		// fetch parent pubs if any
+		$data = $this->db->fetchAndAddParents($data);
+		 
+		// get the first publication
+		$publications = $data['pubs'];
+		$pub = reset($publications);
+		
+		// get the parent
+		$parents = $data['parents'];
+		$parentPub = reset($parents);
+		
+		if ($pub['pubtype'] === 'journal' || $pub['pubtype'] === 'book' || $pub['pubtype'] === 'conference_proceedings') {
+			$childPubs = $this->db->fetchChildren($pub['uid']);
+		}
+		
+		return $this->renderSingleView($pub, $parentPub, $childPubs, $parentPubId, $pPID, $orderPID);
+		
+	}
+	
+	
 	/**
 	 * Generates a detailed view of a single publication
 	 *
 	 * @return	String      The content
 	 */
-	function generateSingleView() {
-
-		$params = t3lib_div::_GET($this->prefixId);
-
-		if (array_key_exists('pubid',$params))
-			$wherecl = 'uid='.$params['pubid'];
-		elseif (array_key_exists('doi',$params)) {
-
-			// look only for the last part of the key
-		 // $wherecl = "doi like '%.".$params['doi']."'";
-
-			// changed to pubid instead of doi part
-		 $wherecl = 'uid='.$params['doi'];
-
-		}
-
-		if (array_key_exists('ppid',$params))
-			$returnlink =  $this->pi_linkToPage('<< '.$this->pi_getLL('back'),$params['ppid']);
+	function renderSingleView($pub, $parentPub, $childPubs, $parentPubId=0, $parentPID=0) {
+		
+		// generate the return link
+		if ($parentPubId !== 0 && $parentPubId !== '') {
+			$parentPubIdStr = array($this->prefixId.'[pubid]' => $parentPubId);
+		} else
+			$parentPubIdSr = NULL;
+		
+		if (parentPID !== 0)
+			$returnlink =  $this->pi_linkToPage('<< '.$this->pi_getLL('back'),$parentPID,'',$parentPubIdStr);
 		else
 			$returnlink = "";
-
-			
+		
+		// get the id of the order page
 		$orderpid =  $this->pi_getFFValue($this->ffdata,'orderpid','sOtherSettings');
-
-		// get data from foreign database if necessary
-		if (isset($params['foreign'])) {
-			foreach ($this->conf['foreignDB.'] as $value )  {
-				if ($value['localCatPID'] == $params['localCat'])
-					break;
-			}
-			mysql_pconnect($value['dbHost'], $value['dbUser'], $value['dbPass']);
-			mysql_select_db( $value['dbName']);
-			$resultForeign = mysql_query('select * FROM tx_pubdb_data WHERE '.$wherecl);
-			if ($GLOBALS['TYPO3_DB']->sql_num_rows($resultForeign) == 0) {
-				$singlepage .=  $this->pi_getLL('error.noentry')." ".$params['doi']."!</br>";
-				return $singlepage;
-			}
-
-
-			$pub = mysql_fetch_assoc($resultForeign);
-
-			if ($pub['pubtype'] === 'journal' || $pub['pubtype'] === 'book' || $pub['pubtype'] === 'conference_proceedings') {
-				$resultChildrenForeign = mysql_query('select * FROM tx_pubdb_data WHERE parent_pubid='.$pub['uid']);
-				while ($row = mysql_fetch_assoc($resultChildrenForeign)) {
-					$childPubs[$row['uid']] = $row;
-				}
-			}
-				
-			if (isset($pub['parent_pubid']) && $pub['parent_pubid'] !== '0') {
-				$resultParentForeign = mysql_query('select * FROM tx_pubdb_data WHERE uid='.$pub['parent_pubid']);
-				$parentPub = mysql_fetch_assoc($resultParentForeign);
-			}
-
-			mysql_close();
-		} else {
-
-			// search in local database
-			$result = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*','tx_pubdb_data',$wherecl);
-
-			// return, if nothing was found
-			if ($GLOBALS['TYPO3_DB']->sql_num_rows($result) == 0) {
-				$singlepage .=  $this->pi_getLL('error.noentry')." ".$params['doi']."!</br>";
-				return $singlepage;
-			}
-
-			$pub = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result);
-
-			if ($pub['pubtype'] === 'journal' || $pub['pubtype'] === 'book' || $pub['pubtype'] === 'conference_proceedings') {
-				$resultChildren = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*','tx_pubdb_data','parent_pubid='.$pub['uid']);
-				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($resultChildren)) {
-					$childPubs[$row['uid']] = $row;
-				}
-			}
-				
-			if (isset($pub['parent_pubid']) && $pub['parent_pubid'] !== '0') {
-				$resultParent = mysql_query('select * FROM tx_pubdb_data WHERE uid='.$pub['parent_pubid']);
-				$parentPub = mysql_fetch_assoc($resultParent);
-			}
-		}
-
-		// check permission for download
-		$download = FALSE;
-		$allowedCat = $this->getAllowedCategories();
-
-		// get publication to category relations
-		$pub2cat = array();
-		$pubid = $pub['uid'];
-		$result=$GLOBALS['TYPO3_DB']->exec_SELECTquery('uid_local,uid_foreign','tx_pubdb_data_category_mm','');
-		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result))
-			$pub2cat[$row['uid_local']][] = $row['uid_foreign'];
-
-		if (sizeof($pub2cat[$pubid]) > 0 ) {
-			foreach ($pub2cat[$pubid] as $c) {
-				if ($allowedCat[$c] === 1) {
-					$download = TRUE;
-					break;
-				}
-			}
-		}
-			
-
-		// check download for foreign data
-		if (isset($params['localCat']) && $allowedCat[$params['localCat']])
-			$download = TRUE;
-
+		
+		
 		// insert title
 		if ($pub['openFile'] != '' || $pub['file'] != '')
 			$p_file .= '<b>'.$this->pi_getLL('download_title').'</b><br/>';
@@ -661,29 +463,22 @@ class tx_pubdb_pi1 extends tslib_pibase {
 		// free downloadable files
 		$fileTypeLink = "filetype.".$pub['openFileType'];
 		if ($pub['openFile'] != '') {
-
 			$files = explode(',',$pub['openFile']);
 			foreach ($files as $f) {
-				if (isset($params['foreign']))
-					$p_file .= '<a href=" '.$this->conf['foreignDB.'][$params['localCat'].'.']['filePath'].'/'.$f.'">'.$f.'</a><br/>';
-				else
 					$p_file .= '<a  target="_blank" href="fileadmin/user_upload/tx_pubdb/'.$f.'">'.$f.'</a><br/>';
 			}
 		}
 			
+		$download = $this->db->hasPubAccess($this->usergroups, $pub['uid']);
 		$fileTypeLink = "filetype.".$pub['fileType'];
 		if ($pub['file'] != '') {
 			$files = explode(',',$pub['file']);
 			foreach ($files as $f) {
 
-				if ($download) {
-					if (isset($params['foreign']))
-						$p_file .= '<a href=" '.$this->conf['foreignDB.'][$params['localCat'].'.']['filePath'].'/'.$f.'">'.$f.'</a><br/>';
-					else
+				if ($download) 
 						$p_file .= '<a  target="_blank" href="fileadmin/user_upload/tx_pubdb/'.$f.'">'.$f.'</a><br/>';
-				}
 				else
-					$p_file .= $f.' ('.$this->pi_getLL('hint.loginrequiredfordownload').')<br/> ';
+						$p_file .= '<span title="'.$this->pi_getLL('hint.loginrequiredfordownload').'">'.$f.'</span><br/> ';
 			}
 		}
 			
@@ -695,64 +490,97 @@ class tx_pubdb_pi1 extends tslib_pibase {
 			$p_order = $this->pi_linkToPage($this->pi_getLL('order'),$orderpid,'',$params);
 		}
 
-		if ($pub['series'] != '') $p_info .= $this->pi_getLL('list.inseries').':&nbsp;'.$pub['series'].',&nbsp;';
-		if ($pub['number'] != '') $p_info .= $pub['number'];
-		if ($pub['year'] != '' && $pub['year'] > 0) $p_info .= ', '.$pub['year'];
-		if ($pub['publisher'] != '') $p_info .= ', '.$pub['publisher'];
-		if ($pub['location'] != '') $p_info.= ', '.$pub['location'];
-		if ($pub['pages'] != '') $p_info.=',&nbsp;'.$pub['pages'].'&nbsp;'.$this->pi_getLL('list.pages');
-		if ($pub['isbn'] != '') $p_info.=',&nbsp;'.$this->pi_getLL('list.isbn').': '.$pub['isbn'];
-		if ($pub['isbn2'] != '') $p_info.=',&nbsp;'.$this->pi_getLL('list.isbn2').': '.$pub['isbn2'];
-
-
-		$p_info = trim($p_info,", ");
-
-		// load tempalte file
+		if ($pub['number'] != '' && $pub['number'] > 0) $p_info .= $this->pi_getLL('volume').' '.$pub['number'].', ';
+		if ($pub['issue'] != '' && $pub['issue'] > 0) $p_info .= $this->pi_getLL('issue').' '.$pub['issue'].', ';
+		if ($pub['year'] != '' && $pub['year'] > 0) $p_info .= $pub['year'].', ';
+		if ($pub['publisher'] != '') $p_info .= $pub['publisher'].', ';
+		if ($pub['location'] != '') $p_info.= $pub['location'].', ';
+		if ($pub['pages'] != '') $p_info .= $this->pi_getLL('pages').' '.$pub['pages'].', ';
+		if ($pub['isbn'] != '') $p_info.= $this->pi_getLL('list.isbn').': '.$pub['isbn'].', ';
+		if ($pub['isbn2'] != '') $p_info.= $this->pi_getLL('list.isbn2').': '.$pub['isbn2'].', ';
+		$p_info = preg_replace('/(\,\s*)$/','',$p_info);
+		
+		
+		// load template file
 		if (isset($this->conf["templateFile"]))
 			$template = $this->cObj->fileResource($this->conf["templateFile"]);
 		else
 			$template = $this->cObj->fileResource($this->standardTemplate);
+		
+		
+		$p_parent = '';
+	    if ($parentPub['title'] != '') {
+	    	$p_parent_title = $parentPub['title'];
+	    	if ($parentPub['number'] != '' && $parentPub['number'] > 0) $p_parent_meta = $this->pi_getLL('volume').' '.$parentPub['number'].', ';
+		    if ($parentPub['issue'] != '' && $parentPub['issue'] > 0) $p_parent_meta .= $this->pi_getLL('issue').' '.$parentPub['issue'].', ';
+		    if ($parentPub['edition'] != '' && $parentPub['edition'] >0 ) $p_parent_meta .= $this->pi_getLL('edition').' '.$parentPub['edition'].', ';
+	    	if ($pub['pages'] != '') $p_parent_meta .= $this->pi_getLL('pages').' '.$pub['pages'].', ';
+	    	$p_parent_meta = preg_replace('/(\,\s*)$/','',$p_parent_meta);
+	    	
+	    	$subpart_parent = $this->cObj->getSubpart($template,"###SINGLE_TEMPLATE_PARENT###");
+	    		
+	    	// get content and define substitution
+	    	$markerARRAYParent['###SINGLE_PARENT_TITLE###']=$p_parent_title;
+	    	$markerARRAYParent['###SINGLE_PARENT_META###']=$p_parent_meta;
+	    	// substitute
+	    	$p_parent = $this->cObj->substituteMarkerArray($subpart_parent,$markerARRAYParent);
+	    }
+		
+	    
+	    /* Author policy:
+	     * 1) check contributors
+	    * 2) check coauthor list
+	    * 3) check author/editor field
+	    */
+	    $contributors = $data['contributors'];
+	    $conts  = $contributors[$pub['uid']];
+	    if (sizeof($conts) < 1 && isset($pub['coauthors']) && strlen($pub['coauthors']) > 1) $conts = tx_pubdb_utils::parseAuthors($pub['coauthors']);
+	    if (sizeof($conts) < 1 && isset($pub['author']) && strlen($pub['author']) > 1) $conts[] = tx_pubdb_utils::parseFullname($pub['author']);
+	    $author = $this->createContributorString($conts);
+	    $editors = $this->createContributorString($conts,'editor');
 
-		// if journal, render the content
-		if ($pub['pubtype'] === 'journal') {
+		// if journal,proceedings or book, render the content
+		$p_content = '';
+		$p_content_title = '';
+		if (tx_pubdb_utils::typeHasChildren($pub['pubtype'])) {
 
-			foreach ($childPubs as $childPub) {
-				if (isset($childPub['isForeign'])) {
-					$params = array( $this->prefixId => array( 'pubid' => $childPub['uid'], ppid => $GLOBALS['TSFE']->id,'foreign'=>1,'localCat'=>$childPub['localCat']));
-				} else
-					$params = array( $this->prefixId => array( 'pubid' => $childPub['uid'], ppid => $GLOBALS['TSFE']->id));
+			foreach ($childPubs['pubs'] as $childPub) {
+ 	 			$params = array( $this->prefixId => array( 'pubid' => $childPub['uid'], 'ppubid' => $pub['uid'], ppid => $GLOBALS['TSFE']->id));
 
-				$p_content .= $this->renderListItem($childPub, $params, $pub);
+				$p_content .= $this->renderListItem($childPub, $params, $childPubs, $this->pi_getFFValue($this->ffdata,'singlepid','sOtherSettings'));
 			}
-
+			if ($p_content !== '') $p_content_title = $this->pi_getLL('single.content.title');
 		}
-
+		
+		
+		if (strlen($pub['abstract']) > 0) $p_abstract_title = $this->pi_getLL('single.abstract.title'); else $p_abstract_title = '';
+		
 		// get subpart
 		$subpart = $this->cObj->getSubpart($template,"###SINGLE_TEMPLATE###");
-
-
-		// get content and define substitution
+		
+		$markerARRAY['###SINGLE_PARENT###'] = $p_parent;
 		$markerARRAY['###SINGLE_DOI###']=$pub['doi'];
 		$markerARRAY['###SINGLE_TITLE###']=$pub['title'];
-		$markerARRAY['###SINGLE_SUBTITLE###']=$pub['subtitle'];
-
-		$authors=$pub['author'];
-		if ($pub['coauthors']!='')
-			$authors .= '; '.$pub['coauthors'];
-		$markerARRAY['###SINGLE_AUTHOR###']=$authors;
-
-		$markerARRAY['###SINGLE_INFO###']=$p_info;
-
+		$markerARRAY['###SINGLE_SUBTITLE###'] = $pub['subtitle'];
+		$markerARRAY['###SINGLE_META###'] = $p_info;
+		$markerARRAY['###SINGLE_AUTHORS###'] = $author;
+		$markerARRAY['###SINGLE_AFFILIATION###']='';
+		
+		$markerARRAY['###SINGLE_CONTENT_TITLE###'] = $p_content_title;
 		$markerARRAY['###SINGLE_CONTENT###'] = $p_content;
 
 
 		$markerARRAY['###SINGLE_FILE###']=$p_file;
+		$markerARRAY['###SINGLE_ABSTRACT_TITLE###']=$p_abstract_title;
 		$markerARRAY['###SINGLE_ABSTRACT###']=$pub['abstract'];
+		
 		$markerARRAY['###SINGLE_RETURNLINK###']=$returnlink;
 		$markerARRAY['###SINGLE_ORDERLINK###'] = $p_order;
 
-		// substitute
+		
+		
 		$singlepage .= $this->cObj->substituteMarkerArray($subpart,$markerARRAY);
+		
 
 		return $singlepage;
 	}
@@ -762,7 +590,7 @@ class tx_pubdb_pi1 extends tslib_pibase {
 	 *
 	 * @return	String      The content
 	 */
-	function generateSearchView() {
+	function renderSearchView() {
 		$url=$this->pi_getPageLink($GLOBALS['TSFE']->id);
 
 		// load template file
@@ -823,16 +651,16 @@ class tx_pubdb_pi1 extends tslib_pibase {
 				$message .= 'Bestellung von: '.chr(10);
 
 				// get the publication
-				$result=$GLOBALS['TYPO3_DB']->exec_SELECTquery('*','tx_pubdb_data','uid='.$this->piVars['pub']);
-				while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result))  {
-					$message .= $row['author'].chr(10).$row['title'];
-					if ($row['subtitle'] != '') $message.=', '.$row['subtitle'];
-					if ($row['number'] != '') $message.=', '.$row['number'];
-					if ($row['location'] != '') $message.=', '.$row['location'];
-					if ($row['year'] != '') $message.=', '.$row['year'];
-					$message.=chr(10).'Preis: '.$row['price'];
-					if ($row['reducedprice'] != '')     $message.=chr(10).'Mitgliedspreis: '.$row['reducedprice'];
-				}
+				$pubs = $this->db->fetchSinglePub($this->piVars['pub']);
+				$pub = reset($pubs['pubs']);
+				$message .= $pub['author'].chr(10).$pub['title'];
+				if ($pub['subtitle'] != '') $message.=', '.$pub['subtitle'];
+				if ($pub['number'] != '') $message.=', '.$pub['number'];
+				if ($pub['location'] != '') $message.=', '.$pub['location'];
+				if ($pub['year'] != '') $message.=', '.$pub['year'];
+				$message.=chr(10).'Preis: '.$pub['price'];
+				if ($pub['reducedprice'] != '')     $message.=chr(10).'Mitgliedspreis: '.$pub['reducedprice'];
+				
 
 				$message .= chr(10).chr(10).'Besteller ist Mitglied: ';
 				if ($ismember == 1)
@@ -959,45 +787,51 @@ class tx_pubdb_pi1 extends tslib_pibase {
 
 	}
 
+	/**
+	 * Renders a single list item
+	 * @param Array $pub
+	 * @param Array $params
+	 * @param Array $publications
+	 * @param integer $singlepageId 
+	 * @return mixed
+	 */
+	function renderListItem($pub, $params, $publications=NULL, $singlepageId) {
 
-	function renderListItem($row, $params, $parent=NULL, $contributors=NULL) {
-
-		//t3lib_utility_Debug::debug($parent,'parent');
-
-		if ($row['abstract'] != '' || $row['pubtype'] === 'journal') {
-			$p_more = $this->pi_linkToPage($this->pi_getLL('more'),$this->singlepageID,'',$params);
+		if ($pub['abstract'] !== '' || tx_pubdb_utils::typeHasChildren($pub['pubtype']) || $pub['file'] !=='' || $pub['openFile'] !== '') {
+			$p_more = $this->pi_linkToPage($this->pi_getLL('more'),$singlepageId,'',$params);
 		}
 
-		if ($row['year'] != '' && $row['year'] > 0) $p_year=$row['year'];
-		if (isset($parent['year'])) $p_year= $parent['year'];
+		if (isset($parent['year']) && $parent['year'] > 0) $p_year= $parent['year'];
+		if ($pub['year'] != '' && $pub['year'] > 0) $p_year=$pub['year'];
+		
 
-		if ($row['hashardcopy'] == 1)
+		if ($pub['hashardcopy'] == 1)
 			$p_order = $this->pi_linkToPage($this->pi_getLL('order'),$orderpid,'',$params);
 
-		if ($row['subtitle'] != '') $p_subtitle = $row['subtitle'];
-		if ($row['publisher'] != '') $p_publisher = $row['publisher'];
-		if ($row['location'] != '') $p_location = $row['location'];
+		if ($pub['subtitle'] != '') $p_subtitle = $pub['subtitle'];
+		if ($pub['publisher'] != '') $p_publisher = $pub['publisher'];
+		if ($pub['location'] != '') $p_location = $pub['location'];
 
-		if ($row['number'] != '') $p_number = $row['number'];
+		if ($pub['number'] != '') $p_number = $pub['number'];
 		if (isset($parent['number'])) $p_number = $parent['number'];
 
-		if ($row['issue'] != '') $p_issue = $row['issue'];
+		if ($pub['issue'] != '') $p_issue = $pub['issue'];
 		if (isset($parent['issue'])) $p_issue = $parent['issue'];
 
-		if ($row['isbn'] != '') $p_isbn = $this->pi_getLL('list.isbn').':&nbsp;'.$row['isbn'];
-		if ($row['pages'] != '') $p_pages=$row['pages'];
-		if ($row['doi'] != '') $p_doi = 'doi:'.$row['doi'];
+		if ($pub['isbn'] != '') $p_isbn = $this->pi_getLL('list.isbn').':&nbsp;'.$pub['isbn'];
+		if ($pub['pages'] != '') $p_pages=$pub['pages'];
+		if ($pub['doi'] != '') $p_doi = 'doi:'.$pub['doi'];
 			
-		if ($row['edition'] != '') $p_edition = $this->addOrdinalNumberSuffix($row['edition']);
+		if ($pub['edition'] != '') $p_edition = $this->addOrdinalNumberSuffix($pub['edition']);
 
 		/* Author policy:
 		 * 1) check contributors
 		 * 2) check coauthor list
 		 * 3) check author/editor field
 		 */ 
-		$conts  = $contributors[$row['uid']];
-		if (sizeof($conts) < 1 && isset($row['coauthors']) && strlen($row['coauthors']) > 1) $conts = tx_pubdb_utils::parseAuthors($row['coauthors']);
-		if (sizeof($conts) < 1 && isset($row['author']) && strlen($row['author']) > 1) $conts[] = tx_pubdb_utils::parseFullname($row['author']);
+		$conts  = $publications['contributors'][$pub['uid']];
+		if (sizeof($conts) < 1 && isset($pub['coauthors']) && strlen($pub['coauthors']) > 1) $conts = tx_pubdb_utils::parseAuthors($pub['coauthors']);
+		if (sizeof($conts) < 1 && isset($pub['author']) && strlen($pub['author']) > 1) $conts[] = tx_pubdb_utils::parseFullname($pub['author']);
 		
 		$author = $this->createContributorString($conts);
 		
@@ -1005,7 +839,8 @@ class tx_pubdb_pi1 extends tslib_pibase {
 
 		if ($p_file!='' || $p_order!='') $p_order.='<br />';
 
-		if (isset($parent)) {
+		if (isset($publications) && key_exists($pub['parent_pubid'],$publications['parents'])) {
+			$parent = $publications['parents'][$pub['parent_pubid']];
 			$p_parent_title = $parent['title'];
 			$p_parent_abbrev_title = $parent['abbrev_title'];
 		} else {
@@ -1014,7 +849,7 @@ class tx_pubdb_pi1 extends tslib_pibase {
 		}
 
 		// get content and define substitution
-		$markerARRAY['###LIST_TITLE###']=$row['title'];
+		$markerARRAY['###LIST_TITLE###']=$pub['title'];
 		$markerARRAY['###LIST_SUBTITLE###']=$p_subtitle;
 		$markerARRAY['###LIST_AUTHOR###']=$author;
 		$markerARRAY['###LIST_FILE###']=$p_file;
@@ -1041,9 +876,9 @@ class tx_pubdb_pi1 extends tslib_pibase {
 
 
 		// get subpart
-		if($row['pubtype'] === 'journal_article')
+		if($pub['pubtype'] === 'journal_article')
 			$subpart = $this->cObj->getSubpart($template,"###LIST_ITEM_TEMPLATE_JOURNAL_ARTICLE###");
-		else if ($row['pubtype'] === 'book')
+		else if ($pub['pubtype'] === 'book')
 			$subpart = $this->cObj->getSubpart($template,"###LIST_ITEM_TEMPLATE_BOOK###");
 		else
 
@@ -1059,7 +894,7 @@ class tx_pubdb_pi1 extends tslib_pibase {
 	function createContributorString($c, $role=NULL) {
 		//t3lib_utility_Debug::debug($c,'contributors');
 		for ($i=0; $i < sizeof($c); $i++) {
-					
+			
 			// if a role is given, take only the coresonding once
 			if (isset($role) && isset($c['role']) && $c['role'] !== $role)
 				continue;

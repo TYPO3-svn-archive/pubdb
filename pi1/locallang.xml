@@ -15,6 +15,10 @@
 			<label index="filetype.3">[download full]</label> 
 			<label index="more">[more]</label>
 			<label index="search">Search</label>
+			<label index="volume">Volume</label>
+			<label index="issue">Issue</label>
+			<label index="pages">Pages</label>
+			<label index="edition">Edition</label>
 			<label index="order">[Order hardcopy]</label>
 			<label index="search.searchfor">Search for</label>
 			<label index="search.infield">In field</label>
@@ -48,7 +52,9 @@
 			<label index="order.formerrormessage">Fields are missing, please check your data!</label>
 			<label index="order.sentmessage">Your order was sent successfully! Thank you!</label>
 			<label index="error.noentry">Sorry, no entry found with id</label>
-			<label index="hint.loginrequiredfordownload">You need to login to download this file.</label>
+			<label index="hint.loginrequiredfordownload">Not logged in or no permission to download this file.</label>
+			<label index="single.content.title">Content:</label>
+			<label index="single.abstract.title">Abstract:</label>
 		</languageKey>
 		<languageKey index="de" type="array">
 			<label index="back">zurück</label>
@@ -60,6 +66,10 @@
 			<label index="filetype.3">[komplette Publikation herunterladen]</label> 
 			<label index="more">[mehr]</label>
 			<label index="search">Suche</label>
+			<label index="volume">Band</label>
+			<label index="issue">Ausgabe</label>
+			<label index="pages">Seiten</label>
+			<label index="edition">Edition</label>
 			<label index="order">[Bestellung]</label>
 			<label index="search.searchfor">Suche nach</label>
 			<label index="search.infield">im Feld</label>
@@ -93,7 +103,9 @@
 			<label index="order.formerrormessage">Es wurden nicht alle erforderlichen Daten angegeben!</label>
 			<label index="order.sentmessage">Ihre Bestellung wurde erfolgreich gesendet! Vielen Dank!</label>
 			<label index="error.noentry">Kein Eintrag gefunden für id</label>
-			<label index="hint.loginrequiredfordownload">Sie müssen eingeloggt sein um diese Datei zu downloaden.</label>
+			<label index="hint.loginrequiredfordownload">Keine Downloadberechtigung!</label>
+			<label index="single.content.title">Inhalt:</label>
+			<label index="single.abstract.title">Kurzfassung:</label>
 		</languageKey>
 	</data>
 </T3locallang>
