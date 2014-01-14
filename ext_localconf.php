@@ -4,6 +4,9 @@ t3lib_extMgm::addUserTSConfig('
 	options.saveDocNew.tx_pubdb_data=1
 ');
 
+// register the frontend plugin TODO
+//\TYPO3\CMS\Extbase\Utility\ExtensionUtility::configurePlugin('jkweb.' . $_EXTKEY, 'pi1'
+
 // Extending TypoScript from static template uid=43 to set up userdefined tag:
 t3lib_extMgm::addTypoScript($_EXTKEY, 'editorcfg', 
 		'tt_content.CSS_editor.ch.tx_pubdb_pi1 = < plugin.tx_pubdb_pi1.CSS_editor', 43);
