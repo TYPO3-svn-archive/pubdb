@@ -1,4 +1,5 @@
 <?php
+namespace jkweb\pubdb\pi1
 /***************************************************************
  *  Copyright notice
 *
@@ -29,20 +30,21 @@
 
 
 require_once(PATH_tslib.'class.tslib_pibase.php');
-require_once(PATH_typo3conf.'ext/pubdb/lib/class.tx_pubdb_toxml.php');
-require_once(PATH_typo3conf.'ext/pubdb/lib/class.tx_pubdb_utils.php');
+require_once(PATH_typo3conf.'ext/pubdb/Classes/class.tx_pubdb_toxml.php');
+require_once(PATH_typo3conf.'ext/pubdb/Classes/class.tx_pubdb_utils.php');
 require_once(PATH_typo3conf.'ext/pubdb/pi1/class.tx_pubdb_dbaccess.php');
 
 class tx_pubdb_pi1 extends tslib_pibase {
-	var $scriptRelPath = 'pi1/class.tx_pubdb_pi1.php';	// Path to this script relative to the extension dir.
-	var $extKey = 'pubdb';	// The extension key.
-	var $pi_checkCHash = TRUE;
-	var $ffdata;
-	var $showSearchForm = 0;
-	var $prefixId = 'tx_pubdb_pi1'; // Same as class name
-	var $standardTemplate = 'typo3conf/ext/pubdb/pi1/template.tmpl';
-	var $db;
-	var $usergroups = '';
+	public $scriptRelPath = 'pi1/class.tx_pubdb_pi1.php';	// Path to this script relative to the extension dir.
+	public $extKey = 'pubdb';	// The extension key.
+	public $pi_checkCHash = TRUE;
+	public $prefixId = 'tx_pubdb_pi1'; // Same as class name
+	
+	private $ffdata;
+	private $showSearchForm = 0;
+	private $standardTemplate = 'typo3conf/ext/pubdb/pi1/template.tmpl';
+	private $db;
+	private $usergroups = '';
 	
 	/**
 	 * The main method of the PlugIn
@@ -51,7 +53,7 @@ class tx_pubdb_pi1 extends tslib_pibase {
 	 * @param	array		$conf: The PlugIn configuration
 	 * @return	The		content that is displayed on the website
 	 */
-	function main($content,$conf)	{
+	public function main($content, $conf)	{
 		$this->conf=$conf;
 		$this->pi_setPiVarDefaults();
 		$this->pi_loadLL();
@@ -61,17 +63,17 @@ class tx_pubdb_pi1 extends tslib_pibase {
 		// load the flexform data array
 		$this->ffdata = $this->cObj->data['pi_flexform'];
 
-		$this->showSearchForm = $this->pi_getFFValue($this->ffdata,'showsearchform','sDEF');
+		$this->showSearchForm = $this->pi_getFFValue($this->ffdata, 'showsearchform', 'sDEF');
 		$this->db = t3lib_div::makeInstance('pubdbAccess');
 			
 		$this->usergroups = $GLOBALS['TSFE']->fe_user->user['usergroup'];
 		//debug($this->usergroups,"usergroups");
 		
 		// get view mode from the flexform data
-		$viewmode = $this->pi_getFFValue($this->ffdata,'viewtype','sDEF');
+		$viewmode = $this->pi_getFFValue($this->ffdata, 'viewtype', 'sDEF');
 
 		switch($viewmode) {
-			case 'NONE': $content .= "View mode not configured yet.";
+			case 'NONE': $content .= 'View mode not configured yet.';
 			break;
 			case 'LIST': $content .= $this->generateListView();
 			break;
@@ -83,7 +85,6 @@ class tx_pubdb_pi1 extends tslib_pibase {
 			break;
 			case 'SHOWREMOTE': $content .= $this->renderRemotePublications();
 			break;
-			
 		}
 
 		return $this->pi_wrapInBaseClass($content);
@@ -92,14 +93,14 @@ class tx_pubdb_pi1 extends tslib_pibase {
 	/**
 	 * Generating content for a remote site accessing publications of this database via a HTTP GET request
 	 **/
-	function getPublicationsByRemoteSite() {
+	private function getPublicationsByRemoteSite() {
 		$content = '';
 		$sortby = $this->piVars['sortby'].' '.$this->piVars['order'];		
  		
 		// get pubs by categories
 		if (isset($this->piVars['categories'])) {
   			$catIds = $this->db->fetchCategoriesByNameAsString($this->piVars['categories']);
-  			$pubs = $this->db->fetchPubsByCategories($catIds,'','',$sortby, $this->piVars['limit']);
+  			$pubs = $this->db->fetchPubsByCategories($catIds, '', '', $sortby, $this->piVars['limit']);
   			$pubs = $this->db->fetchAndAddParents($pubs);
   		// get a single publication	
 		} elseif (isset($this->piVars['pubid'])) {
@@ -115,28 +116,28 @@ class tx_pubdb_pi1 extends tslib_pibase {
 	}
 	
 	
-	function renderRemotePublications() {
+	private function renderRemotePublications() {
 		
 		if (isset($this->piVars['pubid']))
-			$mode = "single";
+			$mode = 'single';
 	    else 
-			$mode = "list";
+			$mode = 'list';
 		
 		// set the singlepage pid to the current page
 		$singlepid = $GLOBALS['TSFE']->id;
 		
-		$remoteurl = $this->pi_getFFValue($this->ffdata,'remoteurl','sDEF');
-		$rpid = $this->pi_getFFValue($this->ffdata,'remotepid','sDEF');
+		$remoteurl = $this->pi_getFFValue($this->ffdata, 'remoteurl', 'sDEF');
+		$rpid = $this->pi_getFFValue($this->ffdata, 'remotepid', 'sDEF');
 		if (isset($rpid) && $rpid!=='' && $rpid !== 0)
 			$confArray['id'] = $rpid;  
-		$confArray['tx_pubdb_pi1[sortby]'] = $this->pi_getFFValue($this->ffdata,'sortmode','sDEF');
-		$confArray['tx_pubdb_pi1[order]'] = $this->pi_getFFValue($this->ffdata,'order','sDEF');
-		$confArray['tx_pubdb_pi1[limit]'] =  $this->pi_getFFValue($this->ffdata,'limit','sDEF');
+		$confArray['tx_pubdb_pi1[sortby]'] = $this->pi_getFFValue($this->ffdata, 'sortmode', 'sDEF');
+		$confArray['tx_pubdb_pi1[order]'] = $this->pi_getFFValue($this->ffdata, 'order', 'sDEF');
+		$confArray['tx_pubdb_pi1[limit]'] =  $this->pi_getFFValue($this->ffdata, 'limit', 'sDEF');
 
 		if ($mode === 'single')		
 			$confArray['tx_pubdb_pi1[pubid]'] = $this->piVars['pubid'];
 		else
-			$confArray['tx_pubdb_pi1[categories]'] = $this->pi_getFFValue($this->ffdata,'remotecategories','sDEF');
+			$confArray['tx_pubdb_pi1[categories]'] = $this->pi_getFFValue($this->ffdata, 'remotecategories', 'sDEF');
  		
 		$confArray['tx_pubdb_pi1[pid]'] =  $singlepid;
 		
@@ -151,15 +152,14 @@ class tx_pubdb_pi1 extends tslib_pibase {
 		} catch(Exception $e) {
 			debug($e);
 		}
-		//$content .= "url: ".$url."</br>";
-		preg_match("/###REQUEST_START###(.+)###REQUEST_END###/s" ,$response->getBody(), $match);
+		preg_match('/###REQUEST_START###(.+)###REQUEST_END###/s', $response->getBody(), $match);
 		
-		$pubs = json_decode($match[1],TRUE);
-		//$content .= print_r($pubs, true);
+		$pubs = json_decode($match[1], TRUE);
 	    
 		if ($mode === 'list')
 			$content .= $this->renderList($pubs, $singlepid);
 		elseif ($mode === 'single') {
+			
 			// fetch first publication
 			$singlepubArray = $pubs['pubs'];
 			$pub = reset($singlepubArray);
@@ -168,64 +168,60 @@ class tx_pubdb_pi1 extends tslib_pibase {
 			$parentPubArray = $pubs['parents'];
 			$parent = reset($parentPubArray);
 									
-			$content .= $this->renderSingleView($pub, $parent, $pubs['children'],'',$GLOBALS['TSFE']->id);
+			$content .= $this->renderSingleView($pub, $parent, $pubs['children'], '', $GLOBALS['TSFE']->id);
 		}
 		
 		//$content .= $response->getBody();
 		return $content;
-		
 	}
 
 	/*
 	 *   Creation of a marker for the tt_news plugin to allow a pubdb entry getting linked at a news entry
 	*/
-	function extraItemMarkerProcessor($markerArray,$row,$lConf,$parentObject) {
+	private function extraItemMarkerProcessor($markerArray, $row, $lConf, $parentObject) {
 			
 		$spid = $parentObject->conf['pubdb_singlePID'];
 
 		if ($row['tx_pubdb_newslink'] > 0) {
 			$params = array( $this->prefixId => array( 'pubid' => $row['tx_pubdb_newslink'], ppid => $GLOBALS['TSFE']->id));
-			$publink = $parentObject->pi_linkToPage($row['tx_pubdb_link_title'],$spid,'',$params);
+			$publink = $parentObject->pi_linkToPage($row['tx_pubdb_link_title'], $spid, '', $params);
 		}
 		else
-			$publink = "";
+			$publink = '';
 
 		$markerArray['###PUBLINK###'] = '<b>'.$publink.'</b>';
 		return $markerArray;
 
 	}
-
-	
-	
 	
 	
 	/*
 	 * Generates the list view page with a given list of publications
 	*/
-	function renderList($pubs, $singlepid=0) {
+	private function renderList($pubs, $singlepid=0) {
 		
 		//debug($pubs);
 		
 		// get the singlepage pid
 		if ($singlepid === 0)
-			$singlepid = $this->pi_getFFValue($this->ffdata,'singlepid','sOtherSettings');
+			$singlepid = $this->pi_getFFValue($this->ffdata, 'singlepid', 'sOtherSettings');
 
 		// get the orderpage pid
-		$orderpid =  $this->pi_getFFValue($this->ffdata,'orderpid','sOtherSettings');
+		$orderpid =  $this->pi_getFFValue($this->ffdata, 'orderpid', 'sOtherSettings');
 
 		// load template file
-		if (isset($this->conf["templateFile"]))
-			$template = $this->cObj->fileResource($this->conf["templateFile"]);
+		if (isset($this->conf['templateFile']))
+			$template = $this->cObj->fileResource($this->conf['templateFile']);
 		else
 			$template = $this->cObj->fileResource($this->standardTemplate);
 
 
-		$subpart_browser = $this->cObj->getSubpart($template,"###LIST_BROWSE_TEMPLATE###");
+		$subpart_browser = $this->cObj->getSubpart($template, '###LIST_BROWSE_TEMPLATE###');
 	
 		// --------------------------- show page browser ------------------------------
 		$pagebrowser = '';
 		$start = 0;
-		$max = $this->pi_getFFValue($this->ffdata,'resultnum','sDEF');
+		$max = $this->pi_getFFValue($this->ffdata, 'resultnum', 'sDEF');
 		$n_pubs = sizeof($pubs['pubs']);
 		
 		//debug($n_pubs, '# of pubs');
@@ -242,23 +238,23 @@ class tx_pubdb_pi1 extends tslib_pibase {
 			$last = $n_pubs/$max;
 
 			if ($this->piVars['pnum'] > 1)
-				$pagebrowser .= $this->pi_linkTP_keepPIvars('<<',array('pnum' => $prev)).'&nbsp;';
+				$pagebrowser .= $this->pi_linkTP_keepPIvars('<<', array('pnum' => $prev)) . '&nbsp;';
 
 			for ($i=0; $i <=  $last; $i++)  {
 				$c = $i+1;
 				if ($this->piVars['pnum'] == $c || ( !isset($this->piVars['pnum']) && $c==1) )
 					$link = $c;
 				else
-					$link = $this->pi_linkTP_keepPIvars($c,array('pnum' => $c));
+					$link = $this->pi_linkTP_keepPIvars($c, array('pnum' => $c));
 				$pagebrowser .= $link.' ';
 			}
 			if ($this->piVars['pnum'] < $last)
-				$pagebrowser .= '&nbsp;'.$this->pi_linkTP_keepPIvars('>>',array('pnum' => $next));
+				$pagebrowser .= '&nbsp;'.$this->pi_linkTP_keepPIvars('>>', array('pnum' => $next));
 		}
 
 		// show page browser on the top of list
 		$bmarkerARRAY['###LIST_PAGEBROWSER###']=$pagebrowser;
-		$content .= $this->cObj->substituteMarkerArray($subpart_browser,$bmarkerARRAY);
+		$content .= $this->cObj->substituteMarkerArray($subpart_browser, $bmarkerARRAY);
 
 
 		// compute indizes
@@ -269,7 +265,7 @@ class tx_pubdb_pi1 extends tslib_pibase {
 		// --------------------------- render list of publications ------------------------------------
 
 		if ($n_pubs === 0)
-			$content .= "<p>".$this->pi_getLL('list.noentries')."<p>";
+			$content .= '<p>' . $this->pi_getLL('list.noentries') . '<p>';
 	
 		$publications = $pubs['pubs'];
 
@@ -290,15 +286,12 @@ class tx_pubdb_pi1 extends tslib_pibase {
 			
 		}
 		// show page browser on the bottom of list
-		$content .= $this->cObj->substituteMarkerArray($subpart_browser,$bmarkerARRAY);
+		$content .= $this->cObj->substituteMarkerArray($subpart_browser, $bmarkerARRAY);
 		return($content);
-
-
-
 	}
 	
 	
-	function generateSearchResultList() {
+	private function generateSearchResultList() {
 		
 		if ($this->piVars['search'] != '') {
 			
@@ -309,7 +302,7 @@ class tx_pubdb_pi1 extends tslib_pibase {
 
 			$match = $this->piVars['search'];
 
-			$pubs = $this->db->fetchSearchResult($field,$match,$field,1000,$this->piVars['category']);
+			$pubs = $this->db->fetchSearchResult($field, $match, $field, 1000, $this->piVars['category']);
 			$pubs = $this->db->fetchAndAddParents($pubs);
 			
 		} else {
@@ -333,7 +326,7 @@ class tx_pubdb_pi1 extends tslib_pibase {
 	 *
 	 * @return	String   The lists content		...
 	 */
-	function generateListView() {
+	private function generateListView() {
 
 
 		$counter = 0;
@@ -346,17 +339,17 @@ class tx_pubdb_pi1 extends tslib_pibase {
 			$content .= $this->generateSearchResultList();
 		} 
 		// generate list from BE page settings otherwise
-		elseif ($this->pi_getFFValue($this->ffdata,'category','sDEF') != -1) {
+		elseif ($this->pi_getFFValue($this->ffdata, 'category', 'sDEF') != -1) {
 
 			// get the categories and the link relation from the flexfrom data
-			$catstring1 = $this->pi_getFFValue($this->ffdata,'category','sDEF');
-			$catstring2 = $this->pi_getFFValue($this->ffdata,'notcategory','sDEF');
+			$catstring1 = $this->pi_getFFValue($this->ffdata, 'category', 'sDEF');
+			$catstring2 = $this->pi_getFFValue($this->ffdata, 'notcategory', 'sDEF');
 
 			// the AND or OR relation for categorie selection in list
-			$linkrel = $this->pi_getFFValue($this->ffdata,'catrel','sDEF');
+			$linkrel = $this->pi_getFFValue($this->ffdata, 'catrel', 'sDEF');
 		
 			// sort clause clause
-			switch ($this->pi_getFFValue($this->ffdata,'sortmode','sDEF')) {
+			switch ($this->pi_getFFValue($this->ffdata, 'sortmode', 'sDEF')) {
 				case 'YEAR': $orderby = 'year';
 				break;
 				case 'TITLE': $orderby = 'title';
@@ -369,11 +362,10 @@ class tx_pubdb_pi1 extends tslib_pibase {
 			}
 
 			// ORDER BY clause
-			$orderby .= ' '.$this->pi_getFFValue($this->ffdata,'order','sDEF');
-			//debug($catstring1,"cat1");
-			//debug($catstring2,"cat2");
+			$orderby .= ' '.$this->pi_getFFValue($this->ffdata, 'order', 'sDEF');
+			//debug($catstring1, "cat1");
+			//debug($catstring2, "cat2");
 			$publications = $this->db->fetchPubsByCategories($catstring1, $catstring2, $linkrel, $orderby);
-			
 			
 			$publications = $this->db->fetchAndAddParents($publications);
 			//debug($publications);
@@ -383,24 +375,23 @@ class tx_pubdb_pi1 extends tslib_pibase {
 	}
 
 	
-	function generateSingleView() {
+	private function generateSingleView() {
 		$params = t3lib_div::_GET($this->prefixId);
 		
 		// generate the return link
-		if (array_key_exists('ppubid',$params)) {
+		if (array_key_exists('ppubid', $params)) {
 			$parentPubId = $params['ppubid'];
 		} else
 			$parentPubId = 0;
 		
-
-		if (array_key_exists('ppid',$params))
+		if (array_key_exists('ppid', $params))
 			$pPID = $params['ppid'];
 		else 
 			$pPID = 0;
 		
-		if (array_key_exists('pubid',$params))
+		if (array_key_exists('pubid', $params))
 			$pubid = $params['pubid'];
-		elseif (array_key_exists('doi',$params)) {
+		elseif (array_key_exists('doi', $params)) {
 			// changed to pubid instead of doi part
 			$pubid = $params['doi'];
 		}
@@ -410,7 +401,7 @@ class tx_pubdb_pi1 extends tslib_pibase {
 		//debug($data);
 		// return, if nothing was found
 		if (sizeof($data['pubs']) === 0) {
-			$singlepage .=  $this->pi_getLL('error.noentry')." ".$pubid."!</br>";
+			$singlepage .=  $this->pi_getLL('error.noentry') . ' ' . $pubid . '!</br>';
 			return $singlepage;
 		}
 		
@@ -430,7 +421,6 @@ class tx_pubdb_pi1 extends tslib_pibase {
 		}
 		
 		return $this->renderSingleView($pub, $parentPub, $childPubs, $parentPubId, $pPID, $orderPID);
-		
 	}
 	
 	
@@ -439,7 +429,7 @@ class tx_pubdb_pi1 extends tslib_pibase {
 	 *
 	 * @return	String      The content
 	 */
-	function renderSingleView($pub, $parentPub, $childPubs, $parentPubId=0, $parentPID=0) {
+	private function renderSingleView($pub, $parentPub, $childPubs, $parentPubId=0, $parentPID=0) {
 		
 		// generate the return link
 		if ($parentPubId !== 0 && $parentPubId !== '') {
@@ -448,12 +438,12 @@ class tx_pubdb_pi1 extends tslib_pibase {
 			$parentPubIdSr = NULL;
 		
 		if (parentPID !== 0)
-			$returnlink =  $this->pi_linkToPage('<< '.$this->pi_getLL('back'),$parentPID,'',$parentPubIdStr);
+			$returnlink =  $this->pi_linkToPage('<< '.$this->pi_getLL('back'), $parentPID, '', $parentPubIdStr);
 		else
-			$returnlink = "";
+			$returnlink = '';
 		
 		// get the id of the order page
-		$orderpid =  $this->pi_getFFValue($this->ffdata,'orderpid','sOtherSettings');
+		$orderpid =  $this->pi_getFFValue($this->ffdata, 'orderpid', 'sOtherSettings');
 		
 		
 		// insert title
@@ -461,18 +451,18 @@ class tx_pubdb_pi1 extends tslib_pibase {
 			$p_file .= '<b>'.$this->pi_getLL('download_title').'</b><br/>';
 
 		// free downloadable files
-		$fileTypeLink = "filetype.".$pub['openFileType'];
+		$fileTypeLink = 'filetype.' . $pub['openFileType'];
 		if ($pub['openFile'] != '') {
-			$files = explode(',',$pub['openFile']);
+			$files = explode(',', $pub['openFile']);
 			foreach ($files as $f) {
 					$p_file .= '<a  target="_blank" href="fileadmin/user_upload/tx_pubdb/'.$f.'">'.$f.'</a><br/>';
 			}
 		}
 			
 		$download = $this->db->hasPubAccess($this->usergroups, $pub['uid']);
-		$fileTypeLink = "filetype.".$pub['fileType'];
+		$fileTypeLink = 'filetype.' . $pub['fileType'];
 		if ($pub['file'] != '') {
-			$files = explode(',',$pub['file']);
+			$files = explode(',', $pub['file']);
 			foreach ($files as $f) {
 
 				if ($download) 
@@ -487,7 +477,7 @@ class tx_pubdb_pi1 extends tslib_pibase {
 
 		if ($pub['hashardcopy'] == 1) {
 			$params = array( $this->prefixId => array( 'pubid' => $pub['uid'], ppid => $GLOBALS['TSFE']->id));
-			$p_order = $this->pi_linkToPage($this->pi_getLL('order'),$orderpid,'',$params);
+			$p_order = $this->pi_linkToPage($this->pi_getLL('order'), $orderpid, '', $params);
 		}
 
 		if ($pub['number'] != '' && $pub['number'] > 0) $p_info .= $this->pi_getLL('volume').' '.$pub['number'].', ';
@@ -498,15 +488,13 @@ class tx_pubdb_pi1 extends tslib_pibase {
 		if ($pub['pages'] != '') $p_info .= $this->pi_getLL('pages').' '.$pub['pages'].', ';
 		if ($pub['isbn'] != '') $p_info.= $this->pi_getLL('list.isbn').': '.$pub['isbn'].', ';
 		if ($pub['isbn2'] != '') $p_info.= $this->pi_getLL('list.isbn2').': '.$pub['isbn2'].', ';
-		$p_info = preg_replace('/(\,\s*)$/','',$p_info);
-		
+		$p_info = preg_replace('/(\,\s*)$/', '', $p_info);
 		
 		// load template file
-		if (isset($this->conf["templateFile"]))
-			$template = $this->cObj->fileResource($this->conf["templateFile"]);
+		if (isset($this->conf['templateFile']))
+			$template = $this->cObj->fileResource($this->conf['templateFile']);
 		else
 			$template = $this->cObj->fileResource($this->standardTemplate);
-		
 		
 		$p_parent = '';
 	    if ($parentPub['title'] != '') {
@@ -515,18 +503,17 @@ class tx_pubdb_pi1 extends tslib_pibase {
 		    if ($parentPub['issue'] != '' && $parentPub['issue'] > 0) $p_parent_meta .= $this->pi_getLL('issue').' '.$parentPub['issue'].', ';
 		    if ($parentPub['edition'] != '' && $parentPub['edition'] >0 ) $p_parent_meta .= $this->pi_getLL('edition').' '.$parentPub['edition'].', ';
 	    	if ($pub['pages'] != '') $p_parent_meta .= $this->pi_getLL('pages').' '.$pub['pages'].', ';
-	    	$p_parent_meta = preg_replace('/(\,\s*)$/','',$p_parent_meta);
+	    	$p_parent_meta = preg_replace('/(\,\s*)$/', '', $p_parent_meta);
 	    	
-	    	$subpart_parent = $this->cObj->getSubpart($template,"###SINGLE_TEMPLATE_PARENT###");
+	    	$subpart_parent = $this->cObj->getSubpart($template, '###SINGLE_TEMPLATE_PARENT###');
 	    		
 	    	// get content and define substitution
-	    	$markerARRAYParent['###SINGLE_PARENT_TITLE###']=$p_parent_title;
-	    	$markerARRAYParent['###SINGLE_PARENT_META###']=$p_parent_meta;
+	    	$markerARRAYParent['###SINGLE_PARENT_TITLE###'] = $p_parent_title;
+	    	$markerARRAYParent['###SINGLE_PARENT_META###'] = $p_parent_meta;
 	    	// substitute
-	    	$p_parent = $this->cObj->substituteMarkerArray($subpart_parent,$markerARRAYParent);
+	    	$p_parent = $this->cObj->substituteMarkerArray($subpart_parent, $markerARRAYParent);
 	    }
 		
-	    
 	    /* Author policy:
 	     * 1) check contributors
 	    * 2) check coauthor list
@@ -537,7 +524,7 @@ class tx_pubdb_pi1 extends tslib_pibase {
 	    if (sizeof($conts) < 1 && isset($pub['coauthors']) && strlen($pub['coauthors']) > 1) $conts = tx_pubdb_utils::parseAuthors($pub['coauthors']);
 	    if (sizeof($conts) < 1 && isset($pub['author']) && strlen($pub['author']) > 1) $conts[] = tx_pubdb_utils::parseFullname($pub['author']);
 	    $author = $this->createContributorString($conts);
-	    $editors = $this->createContributorString($conts,'editor');
+	    $editors = $this->createContributorString($conts, 'editor');
 
 		// if journal,proceedings or book, render the content
 		$p_content = '';
@@ -547,40 +534,38 @@ class tx_pubdb_pi1 extends tslib_pibase {
 			foreach ($childPubs['pubs'] as $childPub) {
  	 			$params = array( $this->prefixId => array( 'pubid' => $childPub['uid'], 'ppubid' => $pub['uid'], ppid => $GLOBALS['TSFE']->id));
 
-				$p_content .= $this->renderListItem($childPub, $params, $childPubs, $this->pi_getFFValue($this->ffdata,'singlepid','sOtherSettings'));
+				$p_content .= $this->renderListItem($childPub, $params, $childPubs, $this->pi_getFFValue($this->ffdata, 'singlepid', 'sOtherSettings'));
 			}
 			if ($p_content !== '') $p_content_title = $this->pi_getLL('single.content.title');
 		}
 		
-		
-		if (strlen($pub['abstract']) > 0) $p_abstract_title = $this->pi_getLL('single.abstract.title'); else $p_abstract_title = '';
+		if (strlen($pub['abstract']) > 0) 
+			$p_abstract_title = $this->pi_getLL('single.abstract.title'); 
+		else 
+			$p_abstract_title = '';
 		
 		// get subpart
-		$subpart = $this->cObj->getSubpart($template,"###SINGLE_TEMPLATE###");
+		$subpart = $this->cObj->getSubpart($template, '###SINGLE_TEMPLATE###');
 		
 		$markerARRAY['###SINGLE_PARENT###'] = $p_parent;
-		$markerARRAY['###SINGLE_DOI###']=$pub['doi'];
-		$markerARRAY['###SINGLE_TITLE###']=$pub['title'];
+		$markerARRAY['###SINGLE_DOI###'] = $pub['doi'];
+		$markerARRAY['###SINGLE_TITLE###'] = $pub['title'];
 		$markerARRAY['###SINGLE_SUBTITLE###'] = $pub['subtitle'];
 		$markerARRAY['###SINGLE_META###'] = $p_info;
 		$markerARRAY['###SINGLE_AUTHORS###'] = $author;
-		$markerARRAY['###SINGLE_AFFILIATION###']='';
+		$markerARRAY['###SINGLE_AFFILIATION###'] = '';
 		
 		$markerARRAY['###SINGLE_CONTENT_TITLE###'] = $p_content_title;
 		$markerARRAY['###SINGLE_CONTENT###'] = $p_content;
 
-
-		$markerARRAY['###SINGLE_FILE###']=$p_file;
-		$markerARRAY['###SINGLE_ABSTRACT_TITLE###']=$p_abstract_title;
-		$markerARRAY['###SINGLE_ABSTRACT###']=$pub['abstract'];
+		$markerARRAY['###SINGLE_FILE###'] = $p_file;
+		$markerARRAY['###SINGLE_ABSTRACT_TITLE###'] = $p_abstract_title;
+		$markerARRAY['###SINGLE_ABSTRACT###'] = $pub['abstract'];
 		
-		$markerARRAY['###SINGLE_RETURNLINK###']=$returnlink;
+		$markerARRAY['###SINGLE_RETURNLINK###'] = $returnlink;
 		$markerARRAY['###SINGLE_ORDERLINK###'] = $p_order;
-
 		
-		
-		$singlepage .= $this->cObj->substituteMarkerArray($subpart,$markerARRAY);
-		
+		$singlepage .= $this->cObj->substituteMarkerArray($subpart, $markerARRAY);
 
 		return $singlepage;
 	}
@@ -590,18 +575,17 @@ class tx_pubdb_pi1 extends tslib_pibase {
 	 *
 	 * @return	String      The content
 	 */
-	function renderSearchView() {
+	private function renderSearchView() {
 		$url=$this->pi_getPageLink($GLOBALS['TSFE']->id);
 
 		// load template file
 		if (isset($this->conf["templateFile"]))
-			$template = $this->cObj->fileResource($this->conf["templateFile"]);
+			$template = $this->cObj->fileResource($this->conf['templateFile']);
 		else
 			$template = $this->cObj->fileResource($this->standardTemplate);
 
-			
 		// get subpart
-		$subpart = $this->cObj->getSubpart($template,"###SEARCH_TEMPLATE###");
+		$subpart = $this->cObj->getSubpart($template, '###SEARCH_TEMPLATE###');
 
 		// set marker replacements
 		$markerARRAY['###SEARCH_TITLE###'] = $this->pi_getLL('search');
@@ -612,16 +596,16 @@ class tx_pubdb_pi1 extends tslib_pibase {
 
 		$markerARRAY['###SEARCH_SEARCH_FOR_FIELD###'] = '<input name="'.$this->prefixId.'[search]" type="text" />';
 		$markerARRAY['###SEARCH_SEARCH_IN_FIELD###'] = '<select name="'.$this->prefixId.'[field]" />';
-		$markerARRAY['###SEARCH_SEARCH_IN_FIELD###'].='<option value="title">'.$this->pi_getLL('search.titlefield').'</option>';
-		$markerARRAY['###SEARCH_SEARCH_IN_FIELD###'].='<option value="author">'.$this->pi_getLL('search.authorfield').'</option>';
-		$markerARRAY['###SEARCH_SEARCH_IN_FIELD###'].='<option value="year">'.$this->pi_getLL('search.yearfield').'</option>';
-		$markerARRAY['###SEARCH_SEARCH_IN_FIELD###'].='<option value="number">'.$this->pi_getLL('search.numberfield').'</option>';
-		$markerARRAY['###SEARCH_SEARCH_IN_FIELD###'].='</select>';
+		$markerARRAY['###SEARCH_SEARCH_IN_FIELD###'] .= '<option value="title">'.$this->pi_getLL('search.titlefield').'</option>';
+		$markerARRAY['###SEARCH_SEARCH_IN_FIELD###'] .= '<option value="author">'.$this->pi_getLL('search.authorfield').'</option>';
+		$markerARRAY['###SEARCH_SEARCH_IN_FIELD###'] .= '<option value="year">'.$this->pi_getLL('search.yearfield').'</option>';
+		$markerARRAY['###SEARCH_SEARCH_IN_FIELD###'] .= '<option value="number">'.$this->pi_getLL('search.numberfield').'</option>';
+		$markerARRAY['###SEARCH_SEARCH_IN_FIELD###'] .= '</select>';
 
 		$markerARRAY['###SEARCH_SEARCH_CAT_FIELD###'] = '<select name="'.$this->prefixId.'[category]" />'.
 				'<option value="0">'.$this->pi_getLL('search.allcat').'</option>';
 
-		$result = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid,name','tx_pubdb_categories','name!="" AND deleted="0"');
+		$result = $GLOBALS['TYPO3_DB']->exec_SELECTquery('uid,name', 'tx_pubdb_categories', 'name!="" AND deleted="0"');
 		while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result)) {
 			$markerARRAY['###SEARCH_SEARCH_CAT_FIELD###'].='<option value="'.$row['uid'].'">'.$row['name'].'</option>';
 		}
@@ -632,17 +616,12 @@ class tx_pubdb_pi1 extends tslib_pibase {
 		//subsitute
 		$content .= $this->cObj->substituteMarkerArray($subpart,$markerARRAY);
 
-
-			
-			
 		return $content;
-
 	}
 
 
 
-	function generateOrderView() {
-
+	private function generateOrderView() {
 
 		// check if ready for sending
 		if (isset($this->piVars['ordersent']))  {
@@ -654,33 +633,30 @@ class tx_pubdb_pi1 extends tslib_pibase {
 				$pubs = $this->db->fetchSinglePub($this->piVars['pub']);
 				$pub = reset($pubs['pubs']);
 				$message .= $pub['author'].chr(10).$pub['title'];
-				if ($pub['subtitle'] != '') $message.=', '.$pub['subtitle'];
-				if ($pub['number'] != '') $message.=', '.$pub['number'];
-				if ($pub['location'] != '') $message.=', '.$pub['location'];
-				if ($pub['year'] != '') $message.=', '.$pub['year'];
-				$message.=chr(10).'Preis: '.$pub['price'];
+				if ($pub['subtitle'] != '') $message .= ', '.$pub['subtitle'];
+				if ($pub['number'] != '') $message .= ', '.$pub['number'];
+				if ($pub['location'] != '') $message .= ', '.$pub['location'];
+				if ($pub['year'] != '') $message .= ', '.$pub['year'];
+				$message.=chr(10).'Preis: ' . $pub['price'];
 				if ($pub['reducedprice'] != '')     $message.=chr(10).'Mitgliedspreis: '.$pub['reducedprice'];
 				
 
 				$message .= chr(10).chr(10).'Besteller ist Mitglied: ';
 				if ($ismember == 1)
-					$message .= "Ja";
+					$message .= 'Ja';
 				else
-					$message .= "Nein";
-
+					$message .= 'Nein';
 
 				$message .= chr(10).chr(10).'An: '.$this->piVars['name'].chr(10);
 				$message .= 'Firma: '.$this->piVars['company'].chr(10);
 				$message .= 'Adresse: '.$this->piVars['street'].chr(10).$this->piVars['zipcode'].' '.$this->piVars['city'].chr(10).$this->piVars['country'].chr(10);
 				$message .= 'E-mail: '.$this->piVars['email'];
-				$recipient = $this->pi_getFFValue($this->ffdata,'orderemail','sOtherSettings');
+				$recipient = $this->pi_getFFValue($this->ffdata, 'orderemail', 'sOtherSettings');
 				$res = $this->cObj->sendNotifyEmail($message, $recipient, '', 'webadmin@seth.asc.tuwien.ac.at', 'Weborder', '');
 				$content .= $this->pi_getLL('order.sentmessage').'<br /><br />';
 				return $content;
-			} else $ordercomplete = false;
+			} else $ordercomplete = FALSE;
 		}
-
-
 
 		$url=$this->pi_getPageLink($GLOBALS['TSFE']->id);
 
@@ -688,8 +664,6 @@ class tx_pubdb_pi1 extends tslib_pibase {
 		if (isset($this->piVars['pubid'])) {
 
 			$pubid = $this->piVars['pubid'];
-
-
 
 			// get front end user groups of the current user
 			//check if it is asim website, can be ignored
@@ -714,11 +688,9 @@ class tx_pubdb_pi1 extends tslib_pibase {
 					
 			}
 
-
 		} else {
 			// request from order page
 			$pubid = $this->piVars['pub'];
-
 
 			$name=  $this->piVars['name'];
 			$company =  $this->piVars['company'];
@@ -731,30 +703,29 @@ class tx_pubdb_pi1 extends tslib_pibase {
 		}
 
 		// get the publication
-		$result=$GLOBALS['TYPO3_DB']->exec_SELECTquery('*','tx_pubdb_data','uid='.$pubid);
+		$result=$GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tx_pubdb_data', 'uid='.$pubid);
 		while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result))  {
 			$pub = $row['author'].'<br><b>'.$row['title'].'</b>';
-			if ($row['subtitle'] != '') $pub.=', '.$row['subtitle'];
-			if ($row['number'] != '') $pub.=', '.$row['number'];
-			if ($row['location'] != '') $pub.=', '.$row['location'];
-			if ($row['year'] != '') $pub.=', '.$row['year'];
+			if ($row['subtitle'] != '') $pub .= ', '.$row['subtitle'];
+			if ($row['number'] != '') $pub .= ', '.$row['number'];
+			if ($row['location'] != '') $pub .= ', '.$row['location'];
+			if ($row['year'] != '') $pub .= ', '.$row['year'];
 			$price = $row['price'];
 			if ($row['reducedprice'] != '')
 				$reducedprice = $row['reducedprice'];
 		}
 
-
 		// load template file
-		if (isset($this->conf["templateFile"]))
-			$template = $this->cObj->fileResource($this->conf["templateFile"]);
+		if (isset($this->conf['templateFile']))
+			$template = $this->cObj->fileResource($this->conf['templateFile']);
 		else
 			$template = $this->cObj->fileResource($this->standardTemplate);
 
-
 		// get subpart
-		$subpart = $this->cObj->getSubpart($template,"###ORDER_TEMPLATE###");
+		$subpart = $this->cObj->getSubpart($template , '###ORDER_TEMPLATE###');
 			
-		$markerARRAY['###ORDER_TEXT1###'] = $this->pi_getLL('order.text1').'<br /><br />'.$pub.'<br /><br />'.$this->pi_getLL('order.text2').'<br /><br />'.$this->pi_getLL('order.price').': <b>'.$price.'</b><br />'.
+		$markerARRAY['###ORDER_TEXT1###'] = $this->pi_getLL('order.text1').'<br /><br />'.$pub.'<br /><br />'.
+				$this->pi_getLL('order.text2').'<br /><br />'.$this->pi_getLL('order.price').': <b>'.$price.'</b><br />'.
 				$this->pi_getLL('order.reducedprice').': <b>'.$reducedprice.'</b><br />';
 		$markerARRAY['###ORDER_BEGIN_FORM###']= '<form method="POST" action="'.$url.'">';
 		$markerARRAY['###ORDER_NAME_DESC###'] = $this->pi_getLL('order.name');
@@ -780,11 +751,9 @@ class tx_pubdb_pi1 extends tslib_pibase {
 		$markerARRAY['###ORDER_REQUIRED_HINT###'] = $this->pi_getLL('order.required');
 
 		//subsitute
-		$content .= $this->cObj->substituteMarkerArray($subpart,$markerARRAY);
-
+		$content .= $this->cObj->substituteMarkerArray($subpart, $markerARRAY);
 			
 		return $content;
-
 	}
 
 	/**
@@ -795,18 +764,17 @@ class tx_pubdb_pi1 extends tslib_pibase {
 	 * @param integer $singlepageId 
 	 * @return mixed
 	 */
-	function renderListItem($pub, $params, $publications=NULL, $singlepageId) {
+	private function renderListItem($pub, $params, $publications=NULL, $singlepageId) {
 
 		if ($pub['abstract'] !== '' || tx_pubdb_utils::typeHasChildren($pub['pubtype']) || $pub['file'] !=='' || $pub['openFile'] !== '') {
-			$p_more = $this->pi_linkToPage($this->pi_getLL('more'),$singlepageId,'',$params);
+			$p_more = $this->pi_linkToPage($this->pi_getLL('more'), $singlepageId, '', $params);
 		}
 
 		if (isset($parent['year']) && $parent['year'] > 0) $p_year= $parent['year'];
 		if ($pub['year'] != '' && $pub['year'] > 0) $p_year=$pub['year'];
-		
 
 		if ($pub['hashardcopy'] == 1)
-			$p_order = $this->pi_linkToPage($this->pi_getLL('order'),$orderpid,'',$params);
+			$p_order = $this->pi_linkToPage($this->pi_getLL('order'), $orderpid, '', $params);
 
 		if ($pub['subtitle'] != '') $p_subtitle = $pub['subtitle'];
 		if ($pub['publisher'] != '') $p_publisher = $pub['publisher'];
@@ -835,11 +803,11 @@ class tx_pubdb_pi1 extends tslib_pibase {
 		
 		$author = $this->createContributorString($conts);
 		
-		$editors = $this->createContributorString($conts,'editor');
+		$editors = $this->createContributorString($conts, 'editor');
 
 		if ($p_file!='' || $p_order!='') $p_order.='<br />';
 
-		if (isset($publications) && key_exists($pub['parent_pubid'],$publications['parents'])) {
+		if (isset($publications) && key_exists($pub['parent_pubid'], $publications['parents'])) {
 			$parent = $publications['parents'][$pub['parent_pubid']];
 			$p_parent_title = $parent['title'];
 			$p_parent_abbrev_title = $parent['abbrev_title'];
@@ -869,31 +837,30 @@ class tx_pubdb_pi1 extends tslib_pibase {
 		$markerARRAY['###LIST_EDITION###']=$p_edition.' ed';
 
 		// load template file
-		if (isset($this->conf["templateFile"]))
-			$template = $this->cObj->fileResource($this->conf["templateFile"]);
+		if (isset($this->conf['templateFile']))
+			$template = $this->cObj->fileResource($this->conf['templateFile']);
 		else
 			$template = $this->cObj->fileResource($this->standardTemplate);
 
-
 		// get subpart
 		if($pub['pubtype'] === 'journal_article')
-			$subpart = $this->cObj->getSubpart($template,"###LIST_ITEM_TEMPLATE_JOURNAL_ARTICLE###");
+			$subpart = $this->cObj->getSubpart($template, '###LIST_ITEM_TEMPLATE_JOURNAL_ARTICLE###');
 		else if ($pub['pubtype'] === 'book')
-			$subpart = $this->cObj->getSubpart($template,"###LIST_ITEM_TEMPLATE_BOOK###");
+			$subpart = $this->cObj->getSubpart($template, '###LIST_ITEM_TEMPLATE_BOOK###');
 		else
 
-			$subpart = $this->cObj->getSubpart($template,"###LIST_ITEM_TEMPLATE###");
+			$subpart = $this->cObj->getSubpart($template, '###LIST_ITEM_TEMPLATE###');
 
 		// substitute
-		$item = $this->cObj->substituteMarkerArray($subpart,$markerARRAY);
+		$item = $this->cObj->substituteMarkerArray($subpart, $markerARRAY);
 		return $this->postProcessItem($item);
-			
 	}
 
 
-	function createContributorString($c, $role=NULL) {
+	private function createContributorString($c, $role=NULL) {
 		//t3lib_utility_Debug::debug($c,'contributors');
-		for ($i=0; $i < sizeof($c); $i++) {
+		$n = sizeof($c);
+		for ($i=0; $i < $n; $i++) {
 			
 			// if a role is given, take only the coresonding once
 			if (isset($role) && isset($c['role']) && $c['role'] !== $role)
@@ -902,14 +869,14 @@ class tx_pubdb_pi1 extends tslib_pibase {
 			$surname = $c[$i]['surname'];
 			if (isset($c[$i]['suffix']) && strlen($c[$i]['suffix']) > 1) $surname .= $c[$i]['suffix'];
 			$givenname = '';
-			$givennames = explode(' ',trim($c[$i]['given_name']));
+			$givennames = explode(' ', trim($c[$i]['given_name']));
 			foreach ($givennames as $n) {
 				$givenname .= $n[0].'. ';
 			}
 			$givenname = trim($givenname);
 			
 			if ($i === 0) {
-				$res .= $surname.', '.$givenname;
+				$res .= $surname . ', '.$givenname;
 			} else if ($i === (sizeof($c) -1)) {
 				$res .= ' and '.$givenname.' '.$surname;
 			} else {
@@ -920,8 +887,9 @@ class tx_pubdb_pi1 extends tslib_pibase {
 		return $res;
 	}
 
-	function addOrdinalNumberSuffix($num) {
-		if (!in_array(($num % 100),array(11,12,13))){
+	private function addOrdinalNumberSuffix($num) {
+		
+		if (!in_array(($num % 100), array(11,12,13))) {
 			switch ($num % 10) {
 				// Handle 1st, 2nd, 3rd
 				case 1:  return $num.'st';
@@ -933,36 +901,34 @@ class tx_pubdb_pi1 extends tslib_pibase {
 	}
 
 
-	function postProcessItem($item) {
-		
+	private function postProcessItem($item) {
 	
   		// remove empty parantheis
 		$item = str_replace('()', '', trim($item));
 			
 		// remove empty html tags, eg.<strong></strong> or <i></i> for able to detect the following patterns
-		$item = preg_replace('/<[a-z]+><\/[a-z]+>/','',$item);
+		$item = preg_replace('/<[a-z]+><\/[a-z]+>/', '', $item);
 	
 		// remove repeating commas and dots
-		$item = preg_replace('/\,(\s*[\,\.]+)+/',',',$item);
+		$item = preg_replace('/\,(\s*[\,\.]+)+/', ',', $item);
 		
 		// remove empy partes ending with :	
-		$item = preg_replace('/(\,\s)+\:/',':',$item);
+		$item = preg_replace('/(\,\s)+\:/', ':', $item);
 
 		// remove empty comma parts following a dot			
-		$item = preg_replace('/\.(\s+[\,\.\:\;])+/','.',$item);
+		$item = preg_replace('/\.(\s+[\,\.\:\;])+/', '.', $item);
 	
 		// remove unnecessary spaces
-		$item = preg_replace('/\s+\,/',',',$item);
+		$item = preg_replace('/\s+\,/', ',', $item);
 
 		// make sure we end with a dot and not with any other character
-		$item = preg_replace('/([\,\:]\s*<\/span>)/','.</span>',$item);
+		$item = preg_replace('/([\,\:]\s*<\/span>)/', '.</span>', $item);
 		
 		// make sure we do not start with a ., or :
-		$item = preg_replace('/>\s*[\,\.\:\;]+/','>',$item);
+		$item = preg_replace('/>\s*[\,\.\:\;]+/', '>', $item);
 
 		return $item;
 	}
-
 }
 
 if (defined('TYPO3_MODE') && $TYPO3_CONF_VARS[TYPO3_MODE]['XCLASS']['ext/pubdb/pi1/class.tx_pubdb_pi1.php'])	{

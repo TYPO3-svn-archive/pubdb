@@ -29,8 +29,8 @@
 
 
 require_once(PATH_tslib.'class.tslib_pibase.php');
-require_once(PATH_typo3conf.'ext/pubdb/lib/class.tx_pubdb_toxml.php');
-require_once(PATH_typo3conf.'ext/pubdb/lib/class.tx_pubdb_utils.php');
+require_once(PATH_typo3conf.'ext/pubdb/Classes/class.tx_pubdb_toxml.php');
+require_once(PATH_typo3conf.'ext/pubdb/Classes/class.tx_pubdb_utils.php');
 
 class tx_pubdb_flexform {
 

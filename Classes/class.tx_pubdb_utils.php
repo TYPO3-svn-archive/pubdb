@@ -34,8 +34,7 @@ class tx_pubdb_utils {
 	* Parse a ; separated list of full names
 	* return: array of the form [index][surname,given_name]
 	*/
-	static function parseAuthors($coauthors) {
-	
+	public static function parseAuthors($coauthors) {
 		
 		$authors = explode(';', $coauthors);
 		$i = 0;
@@ -51,24 +50,24 @@ class tx_pubdb_utils {
 	*	Parse a full name, surname and given name(s) separated by , or SPACE
 	*	return: array [surname,given_name]
 	*/
-	static function parseFullname($fullname) {
+	public static function parseFullname($fullname) {
 		// split by any number of spaces or commas
-		$names=preg_split('/[\s,]+/',$fullname);
+		$names=preg_split('/[\s,]+/', $fullname);
 		
-
 		// if namestring contains comma, surname is first, else last
-		if (strpos($fullname,',') === FALSE) {
+		if (strpos($fullname, ',') === FALSE) {
 			$res['surname']=$names[sizeof($names)-1];
-			
-			for ($i=0; $i<sizeof($names)-1; $i++) {
+			$n = sizeof($names);
+			for ($i=0; $i < $n-1; $i++) {
 			        if ($i > 0) $res['given_name'] .= ' ';
 	
 				$res['given_name'].=$names[$i];
 			}
 		} else {
 			$names= explode(',', $fullname);
-		    	$res['surname']=trim($names[0]);
-			for ($i=1; $i<sizeof($names); $i++) { 
+		    $res['surname']=trim($names[0]);
+		    $n = sizeof($names);	
+			for ($i=1; $i < $n; $i++) { 
 				if ($i > 1) $res['given_name'] .= ' ';
 				$res['given_name'].= trim($names[$i]);
 			}
@@ -77,7 +76,7 @@ class tx_pubdb_utils {
 		return $res;
 	}
 	
-	static function typeHasChildren($pubtype) {
+	public static function typeHasChildren($pubtype) {
 		$hasChildren = array('journal','conference_proceedings','book');
 		return  in_array($pubtype, $hasChildren);
 	}

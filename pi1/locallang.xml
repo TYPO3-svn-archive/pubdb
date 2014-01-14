@@ -34,7 +34,7 @@
 			<label index="list.noentries">No entries found!</label>
 			<label index="list.inseries">In series</label>
 			<label index="list.isbn">ISSN/ISBN Print</label>
-			<label index="list.isbn2">ISSN/ISBN Online</label>
+			<label index="list.isbn2">ISSN/ISBN Electronic</label>
 			<label index="list.pages">pages</label>
 			<label index="order.name">Name</label>
 			<label index="order.company">Company</label>
@@ -85,7 +85,7 @@
 			<label index="list.noentries">Keine Einträge gefunden!</label>
 			<label index="list.inseries">aus der Reihe</label>
 			<label index="list.isbn">ISSN/ISBN Print</label>
-			<label index="list.isbn2">ISSN/ISBN Online</label>
+			<label index="list.isbn2">ISSN/ISBN Elektronisch</label>
 			<label index="list.pages">Seiten</label>
 			<label index="order.name">Name</label>
 			<label index="order.company">Firma</label>
@@ -106,6 +106,57 @@
 			<label index="hint.loginrequiredfordownload">Keine Downloadberechtigung!</label>
 			<label index="single.content.title">Inhalt:</label>
 			<label index="single.abstract.title">Kurzfassung:</label>
+		</languageKey>
+		<languageKey index="fr" type="array">
+			<label index="back">Retour</label>
+			<label index="download">[Télécharger]</label>
+			<label index="download_title">Fichiers:</label>
+			<label index="filetype.0">[Télécharge]</label>
+			<label index="filetype.1">[Télécharge résumé]</label>
+			<label index="filetype.2">[Télécharge sommaire]</label> 
+			<label index="filetype.3">[Télécharge toute la publication]</label> 
+			<label index="more">[Plus de détails]</label>
+			<label index="search">Rechercher</label>
+			<label index="volume">Volume</label>
+			<label index="issue">Numéro</label>
+			<label index="pages">Nombre de pages</label>
+			<label index="edition">Édition</label>
+			<label index="order">[Commande]</label>
+			<label index="search.searchfor">Mots clés</label>
+			<label index="search.infield">im Feld</label>
+			<label index="search.incategory">Catégorie</label>
+			<label index="search.authorfield">Autor</label>
+			<label index="search.yearfield">Année de parution</label>
+			<label index="search.numberfield">Nummer</label>
+			<label index="search.titlefield">Intitulé</label>
+			<label index="search.submit">Valider</label>
+			<label index="search.allcat">Tout</label>
+			<label index="search.entriesfound">Einträge gefunden.</label>
+			<label index="list.publisher">Éditeur</label>
+			<label index="list.noentries">Keine Einträge gefunden!</label>
+			<label index="list.inseries">aus der Reihe</label>
+			<label index="list.isbn">ISSN/ISBN Print</label>
+			<label index="list.isbn2">ISSN/ISBN Online</label>
+			<label index="list.pages">Pages</label>
+			<label index="order.name">Nom</label>
+			<label index="order.company">Firme</label>
+			<label index="order.street">Rue</label>
+			<label index="order.zipcode">Code postal</label>
+			<label index="order.city">Lieu</label>
+			<label index="order.country">Pays</label>
+			<label index="order.email">Courriel</label>
+			<label index="order.submit">Envoyer</label>
+			<label index="order.text1">Senden Sie mir ein Exemplar der Publikation, s'il vous plaît!</label>
+			<label index="order.text2">an die folgende Adresse:</label>
+			<label index="order.price">Prix</label>
+			<label index="order.reducedprice">Prix cassé (pour les membres,...)</label>
+			<label index="order.required">Felder mit * sind verpflichtend</label>
+			<label index="order.formerrormessage">Es wurden nicht alle erforderlichen Daten angegeben!</label>
+			<label index="order.sentmessage">Ihre Bestellung wurde erfolgreich gesendet! Vielen Dank!</label>
+			<label index="error.noentry">Kein Eintrag gefunden für id</label>
+			<label index="hint.loginrequiredfordownload">Keine Downloadberechtigung!</label>
+			<label index="single.content.title">Sommaire:</label>
+			<label index="single.abstract.title">Abrégé:</label>
 		</languageKey>
 	</data>
 </T3locallang>

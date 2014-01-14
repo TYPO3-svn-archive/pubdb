@@ -94,7 +94,7 @@
 					     <maxitems>100</maxitems>
 					     <minitems>0</minitems>
 					     <size>10</size>
-					     <itemsProcFunc>tx_pubdb_tca->genList</itemsProcFunc>
+					     <itemsProcFunc>tx_pubdb_tca->user_categoryList</itemsProcFunc>
 					     <items>
 						     <numIndex index="0" type="array">
 							     <numIndex index="0">Nothing</numIndex>
@@ -135,7 +135,7 @@
 					     <maxitems>100</maxitems>
 					     <minitems>0</minitems>
 					     <size>10</size>
-					     <itemsProcFunc>tx_pubdb_tca->genList</itemsProcFunc>
+					     <itemsProcFunc>tx_pubdb_tca->user_categoryList</itemsProcFunc>
 					     <items>
 						     <numIndex index="0" type="array">
 							     <numIndex index="0">Nothing</numIndex>

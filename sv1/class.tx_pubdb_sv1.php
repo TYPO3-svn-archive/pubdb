@@ -31,16 +31,16 @@
 require_once(PATH_t3lib.'class.t3lib_svbase.php');
 
 class tx_pubdb_sv1 extends t3lib_svbase {
-	var $prefixId = 'tx_pubdb_sv1';		// Same as class name
-	var $scriptRelPath = 'sv1/class.tx_pubdb_sv1.php';	// Path to this script relative to the extension dir.
-	var $extKey = 'pubdb';	// The extension key.
+	private $prefixId = 'tx_pubdb_sv1';		// Same as class name
+	private $scriptRelPath = 'sv1/class.tx_pubdb_sv1.php';	// Path to this script relative to the extension dir.
+	private $extKey = 'pubdb';	// The extension key.
 	
 				/**
 	 * [Put your description here]
 	 *
 	 * @return	[type]		...
 	 */
-				function init()	{
+				public function init()	{
 					$available = parent::init();
 	
 					// Here you can initialize your class.
@@ -62,7 +62,7 @@ class tx_pubdb_sv1 extends t3lib_svbase {
 	 * @param	array		Configuration array
 	 * @return	boolean
 	 */
-				function process($content='', $type='', $conf=array())	{
+				public function process($content='', $type='', $conf=array())	{
 	
 					// Depending on the service type there's not a process() function.
 					// You have to implement the API of that service type.

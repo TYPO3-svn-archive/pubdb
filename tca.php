@@ -128,14 +128,12 @@ $TCA['tx_pubdb_data'] = Array (
 					Array('LLL:EXT:pubdb/locallang_db.xml:tx_pubdb_data.pubType.12', 'conference_proceedings'),
 					Array('LLL:EXT:pubdb/locallang_db.xml:tx_pubdb_data.pubType.3', 'conference_paper'),
 					Array('LLL:EXT:pubdb/locallang_db.xml:tx_pubdb_data.pubType.4', 'book'),
-					Array('LLL:EXT:pubdb/locallang_db.xml:tx_pubdb_data.pubType.13', 'book_chapter'),
+					Array('LLL:EXT:pubdb/locallang_db.xml:tx_pubdb_data.pubType.5', 'book_chapter'),
 					Array('LLL:EXT:pubdb/locallang_db.xml:tx_pubdb_data.pubType.6', 'dissertation'),
 					Array('LLL:EXT:pubdb/locallang_db.xml:tx_pubdb_data.pubType.7', 'report_paper'),
 					Array('LLL:EXT:pubdb/locallang_db.xml:tx_pubdb_data.pubType.8', 'standard'),
 					Array('LLL:EXT:pubdb/locallang_db.xml:tx_pubdb_data.pubType.9', 'database'),
-					Array('LLL:EXT:pubdb/locallang_db.xml:tx_pubdb_data.pubType.5', 'content_item'),
 					Array('LLL:EXT:pubdb/locallang_db.xml:tx_pubdb_data.pubType.10', 'sa_component'),
-					
 				),
 				'default' => 'journal',
 			)
@@ -488,7 +486,6 @@ $TCA['tx_pubdb_data'] = Array (
 		'contributors' => Array(
 			'exclude' => 1,
 			'label' => 'LLL:EXT:pubdb/locallang_db.xml:tx_pubdb_contributors',
-			'displayCond' => 'FIELD:pubtype:IN:conference,conference_proceedings,book,book_chapter,report_paper',
 			'config' => Array(
 				'type' => 'inline',			
 				'foreign_table' => 'tx_pubdb_pub_contributors',
@@ -555,7 +552,7 @@ $TCA['tx_pubdb_pub_contributors'] = Array(
 			'config' => Array(
 				'type' => 'select',
 				'foreign_table' => 'tx_pubdb_contributors',
-				'foreign_table_where' => 'AND showinlist=1',
+				'foreign_table_where' => 'AND showinlist=1 ORDER BY surname',
 				'minitems' => 0,
 				'maxitems' => 1,
 				'size' => 1,
@@ -731,21 +728,21 @@ $TCA['tx_pubdb_contributors'] = Array (
 					'label' => 'LLL:EXT:pubdb/locallang_db.xml:tx_pubdb_contributor.showinlist',
 					'config' => Array (
 							'type' => 'check',
-							'default' => '0'
+							'default' => '1'
 					)
 			),
 			'pubids' => Array(
-					"exclude" => 1,
-					"label" => "pubids",
-					"config" => Array (
-							"type" => "inline",
-							"foreign_table" => "tx_pubdb_pub_contributors",
-							"foreign_selector" => "pubid",
-							"foreign_unique" => "pubid",
-							"foreign_field" => "contributorid",
-							"foreign_sortby" => "contributorsort",
-							//"foreign_label" => "pubid",
-							"maxitems" => 10,
+					'exclude' => 1,
+					'label' => 'pubids',
+					'config' => Array (
+							'type' => 'inline',
+							'foreign_table' => 'tx_pubdb_pub_contributors',
+							'foreign_selector' => 'pubid',
+							'foreign_unique' => 'pubid',
+							'foreign_field' => 'contributorid',
+							'foreign_sortby' => 'contributorsort',
+							//'foreign_label' => 'role',
+							'maxitems' => 10,
 							'size' => 1,
 							'appearance' => array(
 								//	'showSynchronizationLink' => 1,
@@ -763,8 +760,8 @@ $TCA['tx_pubdb_contributors'] = Array (
 	'types' => Array (
 		'0' => Array('showitem' => 'pubids,contributor_type,organization, surname, given_name, suffix, affiliation, ocrid,showinlist')
 	),
-	"palettes" => Array (
-				"1" => Array("showitem" => "")
+	'palettes' => Array (
+				'1' => Array('showitem' => '')
 		)
 );
 
