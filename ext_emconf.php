@@ -1,8 +1,9 @@
 <?php
+
 /***************************************************************
  * Extension Manager/Repository config file for ext "pubdb".
  *
- * Auto generated 09-01-2014 08:02
+ * Auto generated 15-01-2014 19:30
  *
  * Manual updates:
  * Only the data in the array - everything else is removed by next
@@ -28,7 +29,7 @@ $EM_CONF[$_EXTKEY] = array (
 	'clearCacheOnLoad' => 0,
 	'lockType' => '',
 	'author_company' => '',
-	'version' => '1.1.0',
+	'version' => '1.1.2',
 	'constraints' => 
 	array (
 		'depends' => 

@@ -56,7 +56,7 @@ class ext_update {
 		$this->contentItems = $this->getContentItems();
 		$this->authorFieldItems = $this->getAuthorFieldItems();
 		$this->multipleContributorItems = $this->getMultipleContributorItems(); 
-		$this->simulate = t3lib_div::_GP('simulate');
+		$this->simulate = intval(t3lib_div::_GP('simulate'));
 		
 		 if (t3lib_div::_GP('do_update')) {
  		   $out .= '<a href="' . t3lib_div::linkThisScript(array('do_update' => '', 'func' => '')) . '">' . $GLOBALS['LANG']->sL($this->ll . 'back') . '</a><br>';
