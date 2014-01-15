@@ -12,17 +12,17 @@
 			<label index="updater.msg_searchContentItems">Search for pubdb entries which have the pubdb "content_item"</label>
 			<label index="updater.foundMsg_searchContentItems">Found ###COUNT### publication elements</label>
 			<label index="updater.question_searchContentItems">Should the updater fix these entries?</label>
-			<label index="updater.questionInfo_searchContentItems">(If you click "DO IT" the entry will be changed to "book_chapter")</label>
+			<label index="updater.questionInfo_searchContentItems">(If you click "DO IT" the entry will be changed to "book_chapter", simulate does not write changes to the database)</label>
 			
 			<label index="updater.msg_searchAuthorFieldItems">Search for pubdb entries which have a non-empty author field which is outdated and will be removed in future releases</label>
 			<label index="updater.foundMsg_searchAuthorFieldItems">Found ###COUNT### publication elements with a non-empty author field</label>
 			<label index="updater.question_searchAuthorFieldItems">Should the updater fix these entries?</label>
-			<label index="updater.questionInfo_searchAuthorFieldItems">(If you click "DO IT" the entry will be moved to the "contributor" table)</label>
+			<label index="updater.questionInfo_searchAuthorFieldItems">(If you click "DO IT" the entry will be moved to the "contributor" table, simulate does not write changes to the database)</label>
 			
 			<label index="updater.msg_searchDuplicateContributors">Search duplicate contributors in the tx_pubdb_contributors table</label>
 			<label index="updater.foundMsg_searchDuplicateContributors">Found ###COUNT### multiple contributors</label>
 			<label index="updater.question_searchDuplicateContributors">Should the updater merge these entries?</label>
-			<label index="updater.questionInfo_searchDuplicateContributors">(If you click "DO IT" the entries will get merged in terms of surname and given_name and the duplicates will be deleted)</label>
+			<label index="updater.questionInfo_searchDuplicateContributors">(If you click "DO IT" the entries will get merged in terms of surname and given_name and the duplicates will be deleted. Simulate does not write changes to the database)</label>
 			
 			<label index="updater.nothingtodo">Nothing to do</label>
 			<label index="updater.reload">[reload this page]</label>
@@ -42,17 +42,17 @@
 			<label index="updater.msg_searchContentItems">Suche nach Publikationen mit dem Typ "content_item"</label>
 			<label index="updater.foundMsg_searchContentItems">###COUNT### Publikationen gefunden</label>
 			<label index="updater.question_searchContentItems">Soll der Updater diese Einträge aktualisieren?</label>
-			<label index="updater.questionInfo_searchContentItems">(Wenn Sie auf "DO IT" klicken werden die Einträge auf "book_chapter")</label>
+			<label index="updater.questionInfo_searchContentItems">(Wenn Sie auf "DO IT" klicken werden die Einträge auf "book_chapter", "Simulate" schreibt die Änderungen nicht zurück in die Datenbank)</label>
 			
 			<label index="updater.msg_searchAuthorFieldItems">Suche nach Publikationen mit nicht leerem Autor/Editor Feld. Diese ist veraltet und wird in zukünfigen Versionen gelöscht</label>
 			<label index="updater.foundMsg_searchAuthorFieldItems">###COUNT### Publikationen mit nicht leerem Autor/Editor Feld gefunden</label>
 			<label index="updater.question_searchAuthorFieldItems">Soll der Updater diese Einträge aktualisieren?</label>
-			<label index="updater.questionInfo_searchAuthorFieldItems">(Wenn Sie auf "DO IT" klicken werden die Einträge in die "Contributor" Tabelle verschoben)</label>
+			<label index="updater.questionInfo_searchAuthorFieldItems">(Wenn Sie auf "DO IT" klicken werden die Einträge in die "Contributor" Tabelle verschoben, "Simulate" schreibt die Änderungen nicht zurück in die Datenbank)</label>
 			
 			<label index="updater.msg_searchDuplicateContributors">Suche nach mehrfach vorhandenen Einträgen in der tx_pubdb_contributors Tabelle</label>
 			<label index="updater.foundMsg_searchDuplicateContributors">###COUNT### mehrfach vorkommende Datensätze gefunden</label>
 			<label index="updater.question_searchDuplicateContributors">Soll der Update diese Einträge zusammenführen?</label>
-			<label index="updater.questionInfo_searchDuplicateContributors">(Wenn Sie au "DO IT" klicken werden die Einträge zusammengeführt und die mehrfach vorkommenden gelöscht)</label>
+			<label index="updater.questionInfo_searchDuplicateContributors">(Wenn Sie au "DO IT" klicken werden die Einträge zusammengeführt und die mehrfach vorkommenden gelöscht, "Simulate" schreibt die Änderungen nicht zurück in die Datenbank)</label>
 			
 			<label index="updater.nothingtodo">Nichts zu tun</label>
 			<label index="updater.reload">[Seite neu laden]</label>

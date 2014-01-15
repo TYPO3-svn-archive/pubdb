@@ -1,5 +1,4 @@
 <?php
-namespace jkweb\pubdb\pi1
 /***************************************************************
  *  Copyright notice
 *

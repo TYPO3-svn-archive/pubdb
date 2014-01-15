@@ -44,7 +44,8 @@ class ext_update {
 	private $contentItems;	
 	private $authorFieldItems;
 	private $multipleContributorItems;
-
+	private $simulate = 0;
+	
 	/**
 	 * The main function called by typo3 handling the update
 	 */
@@ -55,6 +56,7 @@ class ext_update {
 		$this->contentItems = $this->getContentItems();
 		$this->authorFieldItems = $this->getAuthorFieldItems();
 		$this->multipleContributorItems = $this->getMultipleContributorItems(); 
+		$this->simulate = t3lib_div::_GP('simulate');
 		
 		 if (t3lib_div::_GP('do_update')) {
  		   $out .= '<a href="' . t3lib_div::linkThisScript(array('do_update' => '', 'func' => '')) . '">' . $GLOBALS['LANG']->sL($this->ll . 'back') . '</a><br>';
@@ -232,7 +234,8 @@ class ext_update {
      * Changes all 'content_item' entries to 'book_chapter' in the column 'pubtype' in table 'tx_pubdb_data'.
      */
 	private function updateContentItems() {
-		$result = $GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_pubdb_data', 'pubtype="content_item"', array('pubtype' => 'book_chapter'));
+		if ($this->simulate === 0)
+		   $GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_pubdb_data', 'pubtype="content_item"', array('pubtype' => 'book_chapter'));
 	}
 
     /**
@@ -255,7 +258,8 @@ class ext_update {
                 	$nContributors = 0;
                 	foreach($contributors as $c) {
 	                // check, if contributor exists
-    	            	$uids = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid,surname,given_name', 'tx_pubdb_contributors', 'surname="'.
+    	            if ($this->simulate === 0)
+                		$uids = $GLOBALS['TYPO3_DB']->exec_SELECTgetRows('uid,surname,given_name', 'tx_pubdb_contributors', 'surname="'.
     	            		$c['surname'].'" AND given_name="'.$c['given_name'].'" AND contributor_type="'.$c['contributor_type'].'"');
                 	
                 		if (sizeof($uids) > 0) {
@@ -265,7 +269,8 @@ class ext_update {
     		           		$input = array('surname' => $c['surname'], 'given_name'=>$c['given_name'], 'contributor_type'=>$c['contributor_type'], 
     		           				'pid'=>$item['pid'], 'showinlist'=>1, 'crdate'=>$time, 'tstamp'=>$time, 'cruser_id'=>$userid);
             	    		if (isset($c['affiliation']) && strlen($c['affiliation']) > 0) $input['affiliation'] = $c['affiliation'];
-    		           		$GLOBALS['TYPO3_DB']->exec_INSERTquery('tx_pubdb_contributors', $input);
+            	    		if ($this->simulate === 0)
+            	    			$GLOBALS['TYPO3_DB']->exec_INSERTquery('tx_pubdb_contributors', $input);
                 			$id = $GLOBALS['TYPO3_DB']->sql_insert_id();
                 		}
     	            
@@ -273,7 +278,8 @@ class ext_update {
                 		$time = time();
                 		$input = array('pubid'=>$item['uid'], 'contributorid'=>$id, 'role'=>$c['role'],'pubsort'=>$sort,
                 				'crdate'=>$time, 'tstamp'=>$time, 'pid'=>$item['pid'], 'cruser_id'=>$userid);
-                		$GLOBALS['TYPO3_DB']->exec_INSERTquery('tx_pubdb_pub_contributors', $input);
+                		if ($this->simulate === 0)
+                			$GLOBALS['TYPO3_DB']->exec_INSERTquery('tx_pubdb_pub_contributors', $input);
                 		$sort++;
                 		$nContributors++;
                 
@@ -281,7 +287,8 @@ class ext_update {
                 
 	                // update count in pubdb_data
     	            $n = $item['contributors'] + $nContributors;
-        	        $GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_pubdb_data', 'uid='.$item['uid'], array('contributors'=>$n, 'author'=>''));
+    	            if ($this->simulate === 0)
+        	        	$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_pubdb_data', 'uid='.$item['uid'], array('contributors'=>$n, 'author'=>''));
                 
   		        	$successMsg .= $item['author'] . ' converted to ' . $this->createContributorString($contributors) . '<br />';
 		} else {
@@ -300,6 +307,7 @@ class ext_update {
 		// iterate the found multiple entries
 		foreach($this->multipleContributorItems as $item) {
 			  // update the first entry
+			if ($this->simulate === 0)
 			  $GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_pubdb_contributors', 'uid='.$item['uids'][0], 
 			  		array( 'given_name' => $item['given_name'], 'affiliation' => $item['affiliation']));
 			
@@ -309,6 +317,7 @@ class ext_update {
 			  // delete the others
 			  $n = count($item['uids']);
 			  for ($i = 1; $i < $n; $i++) {
+			  	if ($this->simulate === 0)
 			  	 $GLOBALS['TYPO3_DB']->exec_DELETEquery('tx_pubdb_contributors', 'uid='.$item['uids'][$i]);
 			  	 $msg_deleted .= 'Multiple contributor with id '.$item['uids'][$i].' deleted. ('.$item['surname'].', '.$item['given_name'].', '.$item['affiliation'].')<br />';
 			  	 
@@ -317,13 +326,14 @@ class ext_update {
 			  	 $idString .= $item['uids'][$i];
 			  	 
 			  }
-
-			  $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('contributorid,pubid', 'tx_pubdb_pub_contributors', 'contributorid IN ('.$idString.')');
+			  if ($this->simulate === 0)
+			 	 $res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('contributorid,pubid', 'tx_pubdb_pub_contributors', 'contributorid IN ('.$idString.')');
 			  while ($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res)) {
 			  	$msg_updatedRel .= 'Contributor for publication with id '.$row['pubid'].' updated from '.$row['contributorid'].' to '.$item['uids'][0].'<br/>';
 			  }
 			  // update ids in relation table
-			  $GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_pubdb_pub_contributors', 'contributorid IN ('.$idString.')', array('contributorid'=>$item['uids'][0]));
+			  if ($this->simulate === 0)
+			  	$GLOBALS['TYPO3_DB']->exec_UPDATEquery('tx_pubdb_pub_contributors', 'contributorid IN ('.$idString.')', array('contributorid'=>$item['uids'][0]));
 		}
 		
 		$msg['success'] = '<strong>Contibtuor table tx_pubdb_contributors:</strong><br/>';
@@ -412,6 +422,7 @@ class ext_update {
 	    $commas = substr_count($field, ',');
 	    $semicolons = substr_count($field, ';');
 	    $spaces = substr_count($field, ' ');
+	    $minWords = $this->getMinWordsBetweenSeparator($field);
 	    
 	    /*if ($uid === '10') {
 	    	debug($field, 'preprocessed string');
@@ -425,16 +436,16 @@ class ext_update {
 		$fields = explode(';', $field); 	
 	    
             // if we have more commas or an equal number than spaces, we probably have the format surname1, given_name1, surname2, given_name2,...
- 	    } else if ($commas >= $spaces) {
+ 	    } else if ($commas >= $spaces || $minWords === 1) {
   	        $tempFields = explode(',', $field);
 		$n = sizeof($tempFields);
 		$c = 0;
 		for ($i = 0; $i < $n; $i++) {
 
-	          if ($i % 2 === 0) {		
+          if ($i % 2 === 0) {		
 		    $fields[$c] .= $tempFields[$i];
 		  } else {
-		    $fields[$c] = $tempFields[$i].' '.$fields[$c];
+		    $fields[$c] = $fields[$c].', '.$tempFields[$i];
 		    $c++;
 		  }
 		}
@@ -466,7 +477,33 @@ class ext_update {
 
 	}
 		
+	/**
+	 * Function which counts the minimal number of words between two separators
+	 * @param String $string - String to check
+	 * @param String $sep - Separator
+	 * @return Minimum number of words between separators
+	 */
+	private function getMinWordsBetweenSeparator($string, $sep=',') {
+		$min = 100000;
+		$substr = explode($sep, $string);
+		foreach ($substr as $w) {
+			$words = explode(' ',trim($w));
+			$n = count($words);
+			if ($n < $min) {
+				$min = $n;
+			}
+		}
+		return $min;
+	}
+    
 	
+	
+	/**
+	 * Generic function displaying the option
+	 * @param String $k - The message text
+	 * @param Integer $count - The number if items to be processed
+	 * @param String $func - The name of the function to be called for the update
+	 */
 	private function displayUpdateOption($k, $count, $func) {
 	
 		$msg = $GLOBALS['LANG']->sL($this->ll . 'msg_' . $k) . ' ';
@@ -483,6 +520,7 @@ class ext_update {
 			$msg .= '<p style="margin:5px 0;">' . $GLOBALS['LANG']->sL($this->ll . 'question_' . $k) . '<p>';
 			$msg .=  '<p style="margin-bottom:10px;"><em>'.$GLOBALS['LANG']->sL($this->ll . 'questionInfo_' . $k) . '</em><p>';
 			$msg .= $this->getButton($func);
+			$msg .= $this->getSimulateButton($func);
 		} else {
 			$msg .= '<br>' . $GLOBALS['LANG']->sL($this->ll . 'nothingtodo');
 	
@@ -494,6 +532,10 @@ class ext_update {
 		return $out;
 	}
 	
+	/**
+	 * Renders a warning mesage
+	 * @return String - the rendered message
+	 */
 	private function displayWarning() {
 		$out = '
 		<div style="padding:15px 15px 20px 0;">
@@ -510,7 +552,17 @@ class ext_update {
 	
 	private function getButton($func, $lbl = 'DO IT') {
 	
-		$params = array('do_update' => 1, 'func' => $func);
+		$params = array('do_update' => 1, 'func' => $func, 'simulate' => 0);
+	
+		$onClick = "document.location='" . t3lib_div::linkThisScript($params) . "'; return false;";
+		$button = '<input type="submit" value="' . $lbl . '" onclick="' . htmlspecialchars($onClick) . '">';
+	
+		return $button;
+	}
+	
+	private function getSimulateButton($func, $lbl = 'SIMULATE') {
+	
+		$params = array('do_update' => 1, 'func' => $func, 'simulate' => 1);
 	
 		$onClick = "document.location='" . t3lib_div::linkThisScript($params) . "'; return false;";
 		$button = '<input type="submit" value="' . $lbl . '" onclick="' . htmlspecialchars($onClick) . '">';
