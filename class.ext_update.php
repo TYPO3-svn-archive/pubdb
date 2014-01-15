@@ -116,7 +116,7 @@ class ext_update {
      * Return all rows of the tx_pubdb_data table for which the pubtype is set to "content_item".
      */
 	private function getContentItems() {
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tx_pubdb_data', 'pubtype="content_item"');
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tx_pubdb_data', 'pubtype="content_item" AND deleted=0');
 	
 		$resultRows = array();
 		while(($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
@@ -129,7 +129,7 @@ class ext_update {
 	 * Returns all rows of the tx_pubdb_data table for with the "author" field is not empty.
 	 */
 	private function getAuthorFieldItems() {
-		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tx_pubdb_data', 'author!=""');
+		$res = $GLOBALS['TYPO3_DB']->exec_SELECTquery('*', 'tx_pubdb_data', 'author!="" AND deleted=0');
 	
 		$resultRows = array();
 		while(($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($res))) {
