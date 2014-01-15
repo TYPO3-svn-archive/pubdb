@@ -215,7 +215,6 @@ class tx_pubdb_pi1 extends tslib_pibase {
 		else
 			$template = $this->cObj->fileResource($this->standardTemplate);
 
-
 		$subpart_browser = $this->cObj->getSubpart($template, '###LIST_BROWSE_TEMPLATE###');
 	
 		// --------------------------- show page browser ------------------------------
@@ -255,7 +254,6 @@ class tx_pubdb_pi1 extends tslib_pibase {
 		// show page browser on the top of list
 		$bmarkerARRAY['###LIST_PAGEBROWSER###']=$pagebrowser;
 		$content .= $this->cObj->substituteMarkerArray($subpart_browser, $bmarkerARRAY);
-
 
 		// compute indizes
 		$start = $max* ( $this->piVars['pnum'] - 1);
@@ -327,7 +325,6 @@ class tx_pubdb_pi1 extends tslib_pibase {
 	 * @return	String   The lists content		...
 	 */
 	private function generateListView() {
-
 
 		$counter = 0;
 
@@ -444,7 +441,6 @@ class tx_pubdb_pi1 extends tslib_pibase {
 		
 		// get the id of the order page
 		$orderpid =  $this->pi_getFFValue($this->ffdata, 'orderpid', 'sOtherSettings');
-		
 		
 		// insert title
 		if ($pub['openFile'] != '' || $pub['file'] != '')
@@ -579,7 +575,7 @@ class tx_pubdb_pi1 extends tslib_pibase {
 		$url=$this->pi_getPageLink($GLOBALS['TSFE']->id);
 
 		// load template file
-		if (isset($this->conf["templateFile"]))
+		if (isset($this->conf['templateFile']))
 			$template = $this->cObj->fileResource($this->conf['templateFile']);
 		else
 			$template = $this->cObj->fileResource($this->standardTemplate);
@@ -614,7 +610,7 @@ class tx_pubdb_pi1 extends tslib_pibase {
 		$markerARRAY['###SEARCH_END_FORM###'] = '</form>';
 
 		//subsitute
-		$content .= $this->cObj->substituteMarkerArray($subpart,$markerARRAY);
+		$content .= $this->cObj->substituteMarkerArray($subpart, $markerARRAY);
 
 		return $content;
 	}
@@ -640,7 +636,6 @@ class tx_pubdb_pi1 extends tslib_pibase {
 				$message.=chr(10).'Preis: ' . $pub['price'];
 				if ($pub['reducedprice'] != '')     $message.=chr(10).'Mitgliedspreis: '.$pub['reducedprice'];
 				
-
 				$message .= chr(10).chr(10).'Besteller ist Mitglied: ';
 				if ($ismember == 1)
 					$message .= 'Ja';
@@ -722,7 +717,7 @@ class tx_pubdb_pi1 extends tslib_pibase {
 			$template = $this->cObj->fileResource($this->standardTemplate);
 
 		// get subpart
-		$subpart = $this->cObj->getSubpart($template , '###ORDER_TEMPLATE###');
+		$subpart = $this->cObj->getSubpart($template, '###ORDER_TEMPLATE###');
 			
 		$markerARRAY['###ORDER_TEXT1###'] = $this->pi_getLL('order.text1').'<br /><br />'.$pub.'<br /><br />'.
 				$this->pi_getLL('order.text2').'<br /><br />'.$this->pi_getLL('order.price').': <b>'.$price.'</b><br />'.

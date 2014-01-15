@@ -50,7 +50,7 @@ class ext_update {
 	 */
 	public function main() {
 
-		$GLOBALS['TYPO3_DB']->debugOutput = true;
+		$GLOBALS['TYPO3_DB']->debugOutput = TRUE;
 		
 		$this->contentItems = $this->getContentItems();
 		$this->authorFieldItems = $this->getAuthorFieldItems();
@@ -94,10 +94,10 @@ class ext_update {
 			$out .= '<h3>' . $GLOBALS['LANG']->sL($this->ll . 'actions') . '</h3>';
 			
 			// outdated content item entry
-			$out .= $this->displayUpdateOption('searchContentItems', count($this->contentItems),'updateContentItems');
+			$out .= $this->displayUpdateOption('searchContentItems', count($this->contentItems), 'updateContentItems');
 			
 			// outdated author field
-			$out .= $this->displayUpdateOption('searchAuthorFieldItems', count($this->authorFieldItems),'updateAuthorFieldItems');
+			$out .= $this->displayUpdateOption('searchAuthorFieldItems', count($this->authorFieldItems), 'updateAuthorFieldItems');
 			
 			// multiple contributor entries
 			$out .= $this->displayUpdateOption('searchDuplicateContributors', count($this->multipleContributorItems), 'updateMultipleContributorItems');
@@ -204,7 +204,6 @@ class ext_update {
 		$n1 = preg_replace('/(\p{L})(\.\s*)(\p{L})/', '$1. $3', $name1);
 		$n2 = preg_replace('/(\p{L})(\.\s*)(\p{L})/', '$1. $3', $name2);
 		
-		
 		if (strcasecmp($n1, $n2) === 0) {
 			return TRUE;
 		}
@@ -266,15 +265,15 @@ class ext_update {
     		           		$input = array('surname' => $c['surname'], 'given_name'=>$c['given_name'], 'contributor_type'=>$c['contributor_type'], 
     		           				'pid'=>$item['pid'], 'showinlist'=>1, 'crdate'=>$time, 'tstamp'=>$time, 'cruser_id'=>$userid);
             	    		if (isset($c['affiliation']) && strlen($c['affiliation']) > 0) $input['affiliation'] = $c['affiliation'];
-    		           		$GLOBALS['TYPO3_DB']->exec_INSERTquery('tx_pubdb_contributors' , $input);
-                			$id=$GLOBALS['TYPO3_DB']->sql_insert_id();
+    		           		$GLOBALS['TYPO3_DB']->exec_INSERTquery('tx_pubdb_contributors', $input);
+                			$id = $GLOBALS['TYPO3_DB']->sql_insert_id();
                 		}
     	            
                 		// update pub to contributor relation
                 		$time = time();
                 		$input = array('pubid'=>$item['uid'], 'contributorid'=>$id, 'role'=>$c['role'],'pubsort'=>$sort,
                 				'crdate'=>$time, 'tstamp'=>$time, 'pid'=>$item['pid'], 'cruser_id'=>$userid);
-                		$GLOBALS['TYPO3_DB']->exec_INSERTquery('tx_pubdb_pub_contributors' , $input);
+                		$GLOBALS['TYPO3_DB']->exec_INSERTquery('tx_pubdb_pub_contributors', $input);
                 		$sort++;
                 		$nContributors++;
                 
@@ -308,7 +307,8 @@ class ext_update {
 			  
 			  $idString = '';
 			  // delete the others
-			  for ($i = 1; $i < count($item['uids']); $i++) {
+			  $n = count($item['uids']);
+			  for ($i = 1; $i < $n; $i++) {
 			  	 $GLOBALS['TYPO3_DB']->exec_DELETEquery('tx_pubdb_contributors', 'uid='.$item['uids'][$i]);
 			  	 $msg_deleted .= 'Multiple contributor with id '.$item['uids'][$i].' deleted. ('.$item['surname'].', '.$item['given_name'].', '.$item['affiliation'].')<br />';
 			  	 
@@ -488,7 +488,7 @@ class ext_update {
 	
 		}
 	
-		$out = $this->wrapForm($msg,$GLOBALS['LANG']->sL($this->ll . 'lbl_' . $k));
+		$out = $this->wrapForm($msg, $GLOBALS['LANG']->sL($this->ll . 'lbl_' . $k));
 		$out .= '<br><br>';
 	
 		return $out;

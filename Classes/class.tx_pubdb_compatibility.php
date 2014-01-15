@@ -48,7 +48,8 @@ class tx_pubdb_compatibility implements t3lib_Singleton {
 	 */
 	public function __construct() {
 		if (class_exists('t3lib_utility_VersionNumber')) {
-			if (tx_pubdb_compatibility::int_from_ver(TYPO3_version) >= 6000000) {
+			if (self::int_from_ver(TYPO3_version) >= 6000000) {
+
 				$this->isVersion6 = TRUE;
 			}
 		}

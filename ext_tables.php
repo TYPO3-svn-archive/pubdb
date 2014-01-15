@@ -125,7 +125,7 @@ $tempColumns = Array (
 
 //tt_news erweitern
 t3lib_div::loadTCA('tt_news');
-t3lib_extMgm::addTCAcolumns('tt_news', $tempColumns,1);
+t3lib_extMgm::addTCAcolumns('tt_news', $tempColumns, 1);
 t3lib_extMgm::addToAllTCAtypes('tt_news', ',--div--;Publication,tx_pubdb_link_title,tx_pubdb_newslink;;;;1-1-1');
 
 
