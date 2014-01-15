@@ -31,7 +31,7 @@
 			<label index="updater.warningHeader">Important! Please Read!</label>
 			<label index="updater.warningMsg">The updater manipulates your database and due to the huge amount of configuration variants it is 
 				possible that it &lt;br&gt;might not produce the expected results.&lt;br&gt;
-				So backup your database (at least the table tx_pubdb_data) or do a t3d export of your site 
+				So backup your database (at least the tables tx_pubdb_data, tx_pubdb_contributors, tx_pubdb_pub_contributors) or do a t3d export of your site 
 				&lt;strong&gt;BEFORE&lt;/strong&gt; &lt;br&gt;
 				you click on any of the "DO_IT" Buttons.</label>
 		</languageKey>
@@ -61,7 +61,7 @@
 			<label index="updater.warningHeader">Wichtig! Bitte lesen!</label>
 			<label index="updater.warningMsg">Der updater manipuliert Ihre Datenbank! Durch die hohe Anzahl an Konfigurationsmöglichkeiten 
 				kann es zu &lt;br&gt;unerwarteten Ergebnissen führen.&lt;br&gt;
-				Sichern Sie ihre Datenbank (zumindest die Tabelle tx_pubdb_data) oder machen Sie einen t3d Export ihrer Webseite 
+				Sichern Sie ihre Datenbank (zumindest die Tabellen tx_pubdb_data, tx_pubdb_contributors, tx_pubdb_pub_contributors) oder machen Sie einen t3d Export ihrer Webseite 
 				&lt;strong&gt;BEVOR&lt;/strong&gt; &lt;br&gt;
 				Sie auf den "DO_IT" Button klicken.</label>
 		</languageKey>
