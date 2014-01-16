@@ -449,7 +449,7 @@ class ext_update {
 		    $c++;
 		  }
 		}
-            } else {
+	    } else {
 		$fields = explode(',', $field);
 	    }  
 		
@@ -487,7 +487,7 @@ class ext_update {
 		$min = 100000;
 		$substr = explode($sep, $string);
 		foreach ($substr as $w) {
-			$words = explode(' ',trim($w));
+			$words = explode(' ', trim($w));
 			$n = count($words);
 			if ($n < $min) {
 				$min = $n;
