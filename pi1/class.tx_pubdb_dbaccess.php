@@ -149,20 +149,53 @@ class pubdbAccess {
 	 */
 	function fetchPubsByCategories($categories1, $categories2='0', $rel='OR', $sortby='title DESC', $limit=1000) {
 	
+		//$GLOBALS['TYPO3_DB']->store_lastBuiltQuery = true;
+		
 		if ($categories1 === '0' OR $categories1 === '') {
 			return;
 		}
+		
+		if ($categories2 != '0' && $categories2 != '' && $rel=='AND') {
+			$validAndRel = true;
+		} else {
+			$validAndRel = false;
+		}
+		
+		
 		$mywherecl = 'AND tx_pubdb_data.hidden="0" AND tx_pubdb_data.deleted="0"';
-		if ($categories2 === '0' || $categories2 === '')
-				$mywherecl .= ' AND tx_pubdb_data_category_mm.uid_foreign IN ('.$categories1.')';
-		else 
-				$mywherecl .= ' AND (tx_pubdb_data_category_mm.uid_foreign IN=('.$categories1.') '.$rel.' tx_pubdb_data_category_mm.uid_foreign IN ('.$categories2.'))';
+		// if relation is OR, just joint the category lists
+		if ($categories2 != '0' && $categories2 != '' && $rel==='OR') {
+				$mywherecl1 = $mywherecl.' AND tx_pubdb_data_category_mm.uid_foreign IN ('.$categories1.','.$categories2.')';
+		} else {
+				$mywherecl1 = $mywherecl.' AND tx_pubdb_data_category_mm.uid_foreign IN ('.$categories1.')';
+		}
+	
 		$result = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query('tx_pubdb_data.*','tx_pubdb_data','tx_pubdb_data_category_mm','tx_pubdb_categories',
-				$mywherecl,'',$sortby,$limit);
-		//debug($GLOBALS['TYPO3_DB']->sql_num_rows($result),'rows');
+				$mywherecl1,'',$sortby,$limit);
+		
+		// if relation is AND make second query
+		if ($categories2 != '0' && $categories2 != '' && $rel==='AND') {
+			$mywherecl2 = $mywherecl.' AND tx_pubdb_data_category_mm.uid_foreign IN ('.$categories2.')';
+			$result2 = $GLOBALS['TYPO3_DB']->exec_SELECT_mm_query('tx_pubdb_data.*','tx_pubdb_data','tx_pubdb_data_category_mm','tx_pubdb_categories',
+					$mywherecl2,'',$sortby,$limit);
+			
+			// fetch the uids only
+			while($row =  $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result2)) {
+				$res2Array[$row['uid']] = $row['uid'];
+			}
+		}
+		
+		
+		//debug($GLOBALS['TYPO3_DB']->debug_lastBuiltQuery,'query');
+		
+		// Fetch the results and add it to the assoc array holding all publications
 		while($row = $GLOBALS['TYPO3_DB']->sql_fetch_assoc($result)) {
-			$publications['pubs'][$row['uid']] = $row;
-			$pubids[] = $row['uid'];
+			
+			// if we have an AND relation, take only pubs which are also in the second result  
+			if ( ($validAndRel && array_key_exists($row['uid'], $res2Array)) || !$validAndRel) { 
+				$publications['pubs'][$row['uid']] = $row;
+				$pubids[] = $row['uid'];
+			}
 		}
 	
 		// fetch contributors

@@ -359,8 +359,7 @@ class tx_pubdb_pi1 extends tslib_pibase {
 
 			// ORDER BY clause
 			$orderby .= ' '.$this->pi_getFFValue($this->ffdata, 'order', 'sDEF');
-			//debug($catstring1, "cat1");
-			//debug($catstring2, "cat2");
+
 			$publications = $this->db->fetchPubsByCategories($catstring1, $catstring2, $linkrel, $orderby);
 			
 			$publications = $this->db->fetchAndAddParents($publications);
