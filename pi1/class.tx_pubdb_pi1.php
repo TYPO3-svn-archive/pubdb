@@ -177,7 +177,7 @@ class tx_pubdb_pi1 extends tslib_pibase {
 	/*
 	 *   Creation of a marker for the tt_news plugin to allow a pubdb entry getting linked at a news entry
 	*/
-	private function extraItemMarkerProcessor($markerArray, $row, $lConf, $parentObject) {
+	public function extraItemMarkerProcessor($markerArray, $row, $lConf, $parentObject) {
 			
 		$spid = $parentObject->conf['pubdb_singlePID'];
 
