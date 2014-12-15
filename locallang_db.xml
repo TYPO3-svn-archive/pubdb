@@ -164,6 +164,7 @@
 			<label index="tx_pubdb_data.fileType">Dateityp</label>
 			<label index="tx_pubdb_data.openFile">Datei(en) (immer frei verfügbar)</label>
 			<label index="tx_pubdb_data.openFileType">Dateityp</label>
+			<label index="tx_pubdb_data.parent">Teil von</label>
 			<label index="tx_pubdb_data.pubType">Art der Publikation</label>
 			<label index="tx_pubdb_data.subpubType">Unterart der Publikation</label>
 			<label index="tx_pubdb_data.injournal">In Zeitschrift</label>
@@ -290,7 +291,7 @@
 			<label index="tx_pubdb_data.openFileType">Type of file</label>
 			<label index="tx_pubdb_data.pubType">Type of publication</label>
 			<label index="tx_pubdb_data.subpubType">Subtype of publication</label>
-			<label index="tx_pubdb_data.parent">Is part of</label>
+			<label index="tx_pubdb_data.parent">S'inscrire dans</label>
 			<label index="tx_pubdb_data.conference">Conference</label>
 			<label index="tx_pubdb_data.pubType.1">Journal article</label>
 			<label index="tx_pubdb_data.pubType.2">Journal</label>
